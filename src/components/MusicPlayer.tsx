@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
-import rubia from '../assets/audio/Rubia.mp3';  // 从 src 目录中导入音频文件
 import './MusicPlayer.css';
 
-const MusicPlayer = ({name}) => {
+const MusicPlayer = ({ currentSong }) => {
+  const audioRef = useRef(null);
+  const [playingMusic, setPlayingMusic] = useState(currentSong);
+  useEffect(() => {
+    if (currentSong) {
+      console.log("currentSong", currentSong);
+      setPlayingMusic(currentSong);
+    }
+  }, [currentSong]); // 当 currentSong 改变时，更新播放器
+
   return (
     <div className='music-player-wrapper'>
-      <h3>{name}</h3>
+      <h3>{playingMusic.name}</h3>
       <ReactAudioPlayer
-        src={rubia}  // 使用导入的音频文件
+        src={playingMusic.url}  // 使用导入的音频文件
+        ref={audioRef}
         controls
         autoPlay={true}
         loop={true}
         className="custom-audio-player"
-        controlsList="nodownload"  
+        controlsList="nodownload"
       />
     </div>
   );
