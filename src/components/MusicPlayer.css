@@ -1,0 +1,29 @@
+/* MusicPlayer.css */
+.audio-player-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .custom-audio-player {
+    width: 100%;  /* 控制播放器的宽度 */
+    background-color: #f0f0f0;  /* 修改播放器背景色 */
+    border-radius: 8px;  /* 圆角边框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加阴影效果 */
+    padding: 10px;
+  }
+  
+  .custom-audio-player audio {
+    width: 100%;
+    height: 40px;
+    outline: none;
+  }
+
+  .music-player-wrapper {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #282c34;
+  }
