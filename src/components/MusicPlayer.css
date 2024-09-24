@@ -27,3 +27,17 @@
     width: 100%;
     background-color: #282c34;
   }
+
+  .text {
+    margin-top: 5px;
+    color: #646566;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .icon-area{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin: 0 auto;
+  }

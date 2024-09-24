@@ -11,16 +11,16 @@ async function getData(throwError?: boolean) {
             }
 
             const songs = [
-                { title: "十年", artist: "陈奕迅", duration: "4:12", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "告白气球", artist: "周杰伦", duration: "3:35", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/DaoX.mp3" },
-                { title: "演员", artist: "薛之谦", duration: "4:13", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/DaoX.mp3" },
-                { title: "突然好想你", artist: "五月天", duration: "5:20", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "稻香", artist: "周杰伦", duration: "3:43", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "小幸运", artist: "田馥甄", duration: "4:25", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "匆匆那年", artist: "王菲", duration: "4:40", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "说好不哭", artist: "周杰伦", duration: "3:45", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "平凡之路", artist: "朴树", duration: "5:02", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" },
-                { title: "光年之外", artist: "邓紫棋", duration: "4:23", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3" }
+                { title: "十年", artist: "陈奕迅", duration: "4:12", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/0.png" },
+                { title: "告白气球", artist: "周杰伦", duration: "3:35", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/DaoX.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/8.png" },
+                { title: "演员", artist: "薛之谦", duration: "4:13", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/DaoX.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/9.png" },
+                { title: "突然好想你", artist: "五月天", duration: "5:20", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/3.png" },
+                { title: "稻香", artist: "周杰伦", duration: "3:43", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/4.png" },
+                { title: "小幸运", artist: "田馥甄", duration: "4:25", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/5.png" },
+                { title: "匆匆那年", artist: "王菲", duration: "4:40", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/6.png" },
+                { title: "说好不哭", artist: "周杰伦", duration: "3:45", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/7.png" },
+                { title: "平凡之路", artist: "朴树", duration: "5:02", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/8.png" },
+                { title: "光年之外", artist: "邓紫棋", duration: "4:23", url: "https://yup1.oss-cn-hangzhou.aliyuncs.com/audio/Rubia.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/9.png" }
             ];
 
             resolve(songs); // 返回包含歌曲名、歌手和时长信息的对象数组
@@ -53,7 +53,7 @@ const PlayList = ({ setCurrentSong }) => {
     };
 
     return (
-        <FloatingPanel anchors={[50, 320, window.innerHeight * 0.8]}>
+        <FloatingPanel anchors={[250, 320, window.innerHeight * 0.8]}>
             <PullRefresh onRefresh={onRefresh}>
                 <List finished={finished} onLoad={onLoadRefresh}>
                     {list.map((obj, i) => (
