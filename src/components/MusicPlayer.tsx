@@ -3,17 +3,6 @@ import ReactAudioPlayer from 'react-audio-player';
 import './MusicPlayer.css';
 import { Arrow, ArrowLeft, PauseCircle, PlayCircle } from '@react-vant/icons';
 
-async function cacheAudio(currentSong) {
-  const response = await fetch(currentSong.url);
-  const blob = await response.blob();
-  const reader = new FileReader();
-
-  reader.onloadend = () => {
-    localStorage.setItem(currentSong.title, reader.result); // 将音频文件存储为 Base64 字符串
-  };
-  reader.readAsDataURL(blob);
-}
-
 const MusicPlayer = ({ currentSong }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
   const [playState, setPlayState] = useState(true);
@@ -25,10 +14,6 @@ const MusicPlayer = ({ currentSong }) => {
       setPlayingMusic(currentSong);
       
       // 检查缓存
-      const cachedAudio = localStorage.getItem(currentSong.url);
-      if (!cachedAudio) {
-        cacheAudio(currentSong); // 如果没有缓存，则下载并缓存
-      }
     }
   }, [currentSong]);
 
@@ -60,7 +45,8 @@ const MusicPlayer = ({ currentSong }) => {
           </div>
           <div className='music-player-wrapper'>
             <ReactAudioPlayer
-               src={localStorage.getItem(playingMusic.url) || playingMusic.url}
+              //  src={localStorage.getItem(playingMusic.url) || playingMusic.url}
+              src={ playingMusic.url}
               ref={playerRef}
               controls
               autoPlay={true}
