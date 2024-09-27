@@ -2,24 +2,42 @@ import React, { useEffect, useState, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import './MusicPlayer.css';
 import { Arrow, ArrowLeft, PauseCircle, PlayCircle } from '@react-vant/icons';
+import { Slider, Toast } from 'react-vant';
 
 const MusicPlayer = ({ currentSong }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
   const [playState, setPlayState] = useState(true);
   const playerRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     if (currentSong) {
-      console.log("currentSong", currentSong);
       setPlayingMusic(currentSong);
-      
-      // 检查缓存
     }
   }, [currentSong]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (playerRef.current) {
+        const audio = playerRef.current.audioEl.current;
+        setCurrentTime(audio.currentTime);
+        setDuration(audio.duration);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [playingMusic]);
+
+  const handleSliderChange = (value) => {
+    if (playerRef.current) {
+      playerRef.current.audioEl.current.currentTime = value;
+      setCurrentTime(value); // 更新当前时间
+    }
+  };
+
   const togglePlayPause = () => {
     setPlayState(!playState);
-    console.log("playState", playState)
     if (playState) {
       playerRef.current.audioEl.current.play();
     }
@@ -43,10 +61,21 @@ const MusicPlayer = ({ currentSong }) => {
             )}
             <Arrow color='#f44336' fontSize="2em" />
           </div>
+          {/* 进度条位置 */}
+          <div style={{ width: '90%', margin: '30px auto' }}>
+            <Slider
+              barHeight={4}
+              activeColor="#ee0a24"
+              value={currentTime} // 使用 currentTime 作为 Slider 的值
+              min={0}
+              max={duration}
+              onChange={handleSliderChange}
+              onChangeAfter={(v) => Toast.info(`当前值：${v}`)}
+            />
+          </div>
           <div className='music-player-wrapper'>
             <ReactAudioPlayer
-              //  src={localStorage.getItem(playingMusic.url) || playingMusic.url}
-              src={ playingMusic.url}
+              src={playingMusic.url}
               ref={playerRef}
               controls
               autoPlay={true}
