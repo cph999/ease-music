@@ -3,8 +3,9 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 30vmin;
   pointer-events: none;
+  margin-bottom: 20px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -13,14 +14,25 @@
   }
 }
 
-/* App.css */
 .App-header {
   background-color: #f8f8ec;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-size: calc(10px + 2vmin);
   color: black;
+  padding-top: 5vh;
+}
+
+.music-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
 }
 
 .App-link {

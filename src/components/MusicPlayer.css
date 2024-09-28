@@ -1,43 +1,63 @@
 /* MusicPlayer.css */
-.audio-player-container {
+.music-player {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
-  }
-  
-  .custom-audio-player {
-    width: 100%;  /* 控制播放器的宽度 */
-    background-color: #f0f0f0;  /* 修改播放器背景色 */
-    border-radius: 8px;  /* 圆角边框 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加阴影效果 */
-    padding: 10px;
-  }
-  
-  .custom-audio-player audio {
-    width: 100%;
-    height: 40px;
-    outline: none;
-  }
+    max-width: 350px;
+    margin: 0 auto;
+}
 
-  .music-player-wrapper {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: #282c34;
-  }
+.music-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-  .text {
-    margin-top: 5px;
-    color: #646566;
-    font-size: 14px;
-    text-align: center;
-  }
+.music-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+}
 
-  .icon-area{
+.music-artist {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0 0 0;
+}
+
+.player-controls {
     display: flex;
     justify-content: space-between;
-    width: 60%;
-    margin: 0 auto;
-  }
+    align-items: center;
+    width: 120px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 15px;
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.music-player-wrapper {
+    display: none;
+}
+
+.custom-audio-player {
+    width: 100%;
+    margin-top: 10px;
+}

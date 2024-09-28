@@ -2,14 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import './MusicPlayer.css';
 import { Arrow, ArrowLeft, PauseCircle, PlayCircle } from '@react-vant/icons';
-import { Slider, Toast } from 'react-vant';
+import { Slider } from 'react-vant';
 
-const MusicPlayer = ({ currentSong }) => {
+// 辅助函数：将秒数转换为 "分:秒" 格式
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
+const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, onNextSong }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
   const [playState, setPlayState] = useState(true);
-  const playerRef = useRef(null);
+  const playerRef = useRef<ReactAudioPlayer>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0);
 
   useEffect(() => {
     if (currentSong) {
@@ -19,69 +27,88 @@ const MusicPlayer = ({ currentSong }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (playerRef.current) {
+      if (playerRef.current && playerRef.current.audioEl.current) {
         const audio = playerRef.current.audioEl.current;
         setCurrentTime(audio.currentTime);
-        setDuration(audio.duration);
+        setSliderValue(audio.currentTime);
+        onTimeUpdate(audio.currentTime);
+        if (audio.duration !== duration) {
+          setDuration(audio.duration);
+          onDurationChange(audio.duration);
+        }
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [playingMusic]);
+  }, [playingMusic, onTimeUpdate, onDurationChange, duration]);
 
-  const handleSliderChange = (value) => {
-    if (playerRef.current) {
+  const handleSliderChange = (value: number) => {
+    setSliderValue(value);
+  };
+
+  const handleSliderAfterChange = (value: number) => {
+    if (playerRef.current && playerRef.current.audioEl.current) {
       playerRef.current.audioEl.current.currentTime = value;
-      setCurrentTime(value); // 更新当前时间
+      setCurrentTime(value);
     }
   };
 
   const togglePlayPause = () => {
     setPlayState(!playState);
-    if (playState) {
-      playerRef.current.audioEl.current.play();
-    }
-    else {
-      playerRef.current.audioEl.current.pause();
+    if (playerRef.current && playerRef.current.audioEl.current) {
+      if (playState) {
+        playerRef.current.audioEl.current.play();
+      } else {
+        playerRef.current.audioEl.current.pause();
+      }
     }
   }
 
   return (
-    <div>
+    <div className="music-player">
       {playingMusic && (
         <>
-          <h3>{playingMusic.title}</h3>
-          <h3>{playingMusic.artist}</h3>
-          <div className="icon-area">
-            <ArrowLeft fontSize="2em" />
-            {playState ? (
-              <PlayCircle fontSize="2em" onClick={togglePlayPause} />
-            ) : (
-              <PauseCircle fontSize="2em" color='#f44336' onClick={togglePlayPause} />
-            )}
-            <Arrow color='#f44336' fontSize="2em" />
+          <div className="music-info">
+            <h3 className="music-title">{playingMusic.title}</h3>
+            <p className="music-artist">{playingMusic.artist}</p>
           </div>
-          {/* 进度条位置 */}
-          <div style={{ width: '90%', margin: '30px auto' }}>
+          <div className="player-controls">
+            <ArrowLeft fontSize="1.5em" onClick={onPrevSong} />
+            {playState ? (
+              <PauseCircle fontSize="1.5em" onClick={togglePlayPause} />
+            ) : (
+              <PlayCircle fontSize="1.5em" color='#f44336' onClick={togglePlayPause} />
+            )}
+            <Arrow color='#f44336' fontSize="1.5em" onClick={onNextSong} />
+          </div>
+          <div className="progress-bar">
             <Slider
-              barHeight={4}
+              barHeight={2}
               activeColor="#ee0a24"
-              value={currentTime} // 使用 currentTime 作为 Slider 的值
+              value={sliderValue}
               min={0}
               max={duration}
               onChange={handleSliderChange}
-              onChangeAfter={(v) => Toast.info(`当前值：${v}`)}
+              onChangeAfter={handleSliderAfterChange}
             />
+            <div className="time-display">
+              <span>{formatTime(sliderValue)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
           </div>
           <div className='music-player-wrapper'>
             <ReactAudioPlayer
               src={playingMusic.url}
               ref={playerRef}
-              controls
               autoPlay={true}
               loop={true}
               className="custom-audio-player"
               controlsList="nodownload"
+              onLoadedMetadata={(e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+                const target = e.target as HTMLAudioElement;
+                setDuration(target.duration);
+                onDurationChange(target.duration);
+              }}
             />
           </div>
         </>

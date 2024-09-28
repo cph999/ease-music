@@ -1,12 +1,13 @@
-const MusicItem = ({ item, onSongClick }) => {
+import React from 'react';
+
+const MusicItem = ({ item, onSongClick, isPlaying }) => {
     if (!item) {
         return <div>暂无歌曲信息</div>;
     }
 
-
     return (
         <div
-            onClick={onSongClick} // 直接传递函数引用
+            onClick={onSongClick}
             style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -14,16 +15,16 @@ const MusicItem = ({ item, onSongClick }) => {
                 padding: "10px",
                 margin: "5px 0",
                 borderRadius: "5px",
-                backgroundColor: "#f9f9f9",
+                backgroundColor: isPlaying ? "#e6f7ff" : "#f9f9f9",
                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                cursor: "pointer", // 增加光标样式
-                transition: "background-color 0.3s", // 添加过渡效果
+                cursor: "pointer",
+                transition: "background-color 0.3s",
             }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#e9e9e9"; // 悬停效果
+                e.currentTarget.style.backgroundColor = isPlaying ? "#d6eeff" : "#e9e9e9";
             }}
             onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#f9f9f9"; // 恢复原色
+                e.currentTarget.style.backgroundColor = isPlaying ? "#e6f7ff" : "#f9f9f9";
             }}
         >
             <div style={{ display: "flex", alignItems: "center" }}>
