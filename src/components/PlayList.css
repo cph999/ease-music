@@ -1,11 +1,30 @@
 .playlist-container {
     height: 100%;
-    overflow-y: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    display: flex;
+    flex-direction: column;
 }
 
-.playlist-container::-webkit-scrollbar { /* WebKit */
+.playlist-header {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.playlist-drag-handle {
+    width: 40px;
+    height: 4px;
+    background-color: #ccc;
+    border-radius: 2px;
+    margin: 0 auto 10px;
+}
+
+.playlist-container .rv-pull-refresh,
+.playlist-container .rv-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.playlist-container::-webkit-scrollbar {
     width: 0;
     height: 0;
 }

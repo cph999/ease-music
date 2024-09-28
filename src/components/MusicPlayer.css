@@ -35,7 +35,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 120px;
+    width: 200px; /* 增加宽度 */
     margin-bottom: 10px;
 }
 
@@ -60,4 +60,17 @@
 .custom-audio-player {
     width: 100%;
     margin-top: 10px;
+}
+
+.control-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.control-icon:hover {
+    transform: scale(1.1);
+}
+
+.play-pause {
+    margin: 0 20px; /* 为播放/暂停按钮添加额外的边距 */
 }

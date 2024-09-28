@@ -12,7 +12,7 @@ const instance = axios.create({
 });
 
 function App() {
-  const [currentSong, setCurrentSong] = useState({ title: "All For Love", artist: "Bryan Adams", duration: "5:20", url: "https://webfs.kugou.com/202409241930/d501274a562bde98e8118f53541369c9/v3/4a26f2fdda5e049493bfb7a1c58b6f07/yp/full/ap1014_us0_mii0w1iw8z2ai2iphcu80ooo2ki81120_pi406_mx574948317_s2517498387.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/3.png" });
+  const [currentSong, setCurrentSong] = useState({ title: "All For Love", artist: "Bryan Adams", duration: "5:20", url: "https://lx-sycdn.kuwo.cn/70f54e1f3f84b26a7b81fc6bd7791469/66f76e19/resource/n2/72/20/432496392.mp3", cover: "https://yup1.oss-cn-hangzhou.aliyuncs.com/images/images/3.png" });
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState([]);

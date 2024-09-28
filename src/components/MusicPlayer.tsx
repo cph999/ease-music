@@ -73,13 +73,13 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
             <p className="music-artist">{playingMusic.artist}</p>
           </div>
           <div className="player-controls">
-            <ArrowLeft fontSize="1.5em" onClick={onPrevSong} />
+            <ArrowLeft className="control-icon" fontSize="2em" onClick={onPrevSong} />
             {playState ? (
-              <PauseCircle fontSize="1.5em" onClick={togglePlayPause} />
+              <PauseCircle className="control-icon play-pause" fontSize="2.5em" onClick={togglePlayPause} />
             ) : (
-              <PlayCircle fontSize="1.5em" color='#f44336' onClick={togglePlayPause} />
+              <PlayCircle className="control-icon play-pause" fontSize="2.5em" color='#f44336' onClick={togglePlayPause} />
             )}
-            <Arrow color='#f44336' fontSize="1.5em" onClick={onNextSong} />
+            <Arrow className="control-icon" color='#f44336' fontSize="2em" onClick={onNextSong} />
           </div>
           <div className="progress-bar">
             <Slider
