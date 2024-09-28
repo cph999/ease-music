@@ -23,7 +23,6 @@ const PlayList = ({ setCurrentSong, currentSong, playlist }) => {
     return (
         <FloatingPanel 
             anchors={[100, 200, window.innerHeight * 0.7]} 
-            duration={0.4}
         >
             <div className="playlist-container">
                 <PullRefresh onRefresh={onRefresh}>

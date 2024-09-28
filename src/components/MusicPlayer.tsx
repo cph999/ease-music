@@ -11,9 +11,9 @@ const formatTime = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, onNextSong }) => {
+const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
-  const [playState, setPlayState] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
   const playerRef = useRef<ReactAudioPlayer>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -22,6 +22,10 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
   useEffect(() => {
     if (currentSong) {
       setPlayingMusic(currentSong);
+      setIsPlaying(true);
+      if (playerRef.current && playerRef.current.audioEl.current) {
+        playerRef.current.audioEl.current.play();
+      }
     }
   }, [currentSong]);
 
@@ -31,16 +35,14 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
         const audio = playerRef.current.audioEl.current;
         setCurrentTime(audio.currentTime);
         setSliderValue(audio.currentTime);
-        onTimeUpdate(audio.currentTime);
         if (audio.duration !== duration) {
           setDuration(audio.duration);
-          onDurationChange(audio.duration);
         }
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [playingMusic, onTimeUpdate, onDurationChange, duration]);
+  }, [playingMusic, duration]);
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
@@ -54,13 +56,13 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
   };
 
   const togglePlayPause = () => {
-    setPlayState(!playState);
     if (playerRef.current && playerRef.current.audioEl.current) {
-      if (playState) {
-        playerRef.current.audioEl.current.play();
-      } else {
+      if (isPlaying) {
         playerRef.current.audioEl.current.pause();
+      } else {
+        playerRef.current.audioEl.current.play();
       }
+      setIsPlaying(!isPlaying);
     }
   }
 
@@ -74,7 +76,7 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
           </div>
           <div className="player-controls">
             <ArrowLeft className="control-icon" fontSize="2em" onClick={onPrevSong} />
-            {playState ? (
+            {isPlaying ? (
               <PauseCircle className="control-icon play-pause" fontSize="2.5em" onClick={togglePlayPause} />
             ) : (
               <PlayCircle className="control-icon play-pause" fontSize="2.5em" color='#f44336' onClick={togglePlayPause} />
@@ -101,14 +103,14 @@ const MusicPlayer = ({ currentSong, onTimeUpdate, onDurationChange, onPrevSong, 
               src={playingMusic.url}
               ref={playerRef}
               autoPlay={true}
-              loop={true}
               className="custom-audio-player"
               controlsList="nodownload"
-              onLoadedMetadata={(e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+              onLoadedMetadata={(e: Event) => {
                 const target = e.target as HTMLAudioElement;
                 setDuration(target.duration);
-                onDurationChange(target.duration);
               }}
+              onError={onError}
+              onEnded={onNextSong}
             />
           </div>
         </>
