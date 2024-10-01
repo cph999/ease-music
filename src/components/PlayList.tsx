@@ -6,10 +6,7 @@ import './PlayList.css'; // 新增这一行
 
 const PlayList = ({ setCurrentSong, currentSong, playlist, isInChromeExtension }) => {
     const [finished, setFinished] = useState<boolean>(false);
-    const displayStyle = isInChromeExtension ? { display: 'inline' } : { display: 'none' };
-    console.log("isInChromeExtension", isInChromeExtension)
-    console.log("displayStyle", displayStyle)
-
+    const listStyle = isInChromeExtension() ? { display: 'none' } : { display: 'inline' };
     const handleSongClick = (song) => {
         setCurrentSong(song);
     };
@@ -26,8 +23,7 @@ const PlayList = ({ setCurrentSong, currentSong, playlist, isInChromeExtension }
     return (
         <FloatingPanel
             anchors={[100, 200, window.innerHeight * 0.7]}
-            style={displayStyle}
-        >
+            style={listStyle} >
             <div className="playlist-container">
                 <PullRefresh onRefresh={onRefresh}>
                     <List finished={finished} onLoad={onLoadRefresh}>

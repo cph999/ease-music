@@ -1,0 +1,46 @@
+/* 隐藏浏览器右侧滚动条 */
+/* body {
+  overflow-y: hidden !important;
+} */
+
+/* 播放器样式 */
+#ease-music-player {
+  position: fixed;
+  top: 10%;
+  right: 0;
+  width: 23%;
+  height: 50%;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 9999;
+  display: none;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  pointer-events: auto; /* 确保播放器可以接收鼠标事件 */
+}
+
+#ease-music-player iframe {
+  width: calc(100% / 0.65);
+  height: calc((100% - 25px) / 0.65); /* 减去关闭按钮的高度并考虑缩放 */
+  border: none;
+  transform: scale(0.65);
+  transform-origin: 0 0;
+  display: block;
+}
+
+#ease-music-close {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+#ease-music-close:hover {
+  background-color: #e0e0e0;
+}

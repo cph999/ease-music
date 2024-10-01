@@ -9,8 +9,8 @@ import { Image, Toast } from 'react-vant'
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: "https://app102.acapp.acwing.com.cn/api",
-  // baseURL: "http://localhost:8809/api",
+  // baseURL: "https://app102.acapp.acwing.com.cn/api",
+  baseURL: "http://localhost:8809/api",
 
   timeout: 5000,
 });
@@ -64,7 +64,7 @@ function App() {
 
   // 修改 isInChromeExtension 函数
   const isInChromeExtension = () => {
-    return typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+    return true; // 现在总是返回 true
   };
 
   return (
@@ -73,8 +73,17 @@ function App() {
         <div className="music-container">
           {currentSong && (
             <>
-
-              <Image src={currentSong.cover} className="App-logo" alt="logo" round fit="cover" />
+              <div className="image-container">
+                <Image 
+                  src={currentSong.cover} 
+                  className="App-logo" 
+                  alt="logo" 
+                  round 
+                  fit="cover" 
+                  width="100%"
+                  height="100%"
+                />
+              </div>
               <MusicPlayer
                 currentSong={currentSong}
                 onPrevSong={handlePrevSong}
@@ -84,12 +93,14 @@ function App() {
             </>
           )}
         </div>
-        <PlayList
-          setCurrentSong={setCurrentSong}
-          currentSong={currentSong}
-          playlist={playlist}
-          isInChromeExtension={isInChromeExtension}
-        />
+        {!isInChromeExtension() && (
+          <PlayList
+            setCurrentSong={setCurrentSong}
+            currentSong={currentSong}
+            playlist={playlist}
+            isInChromeExtension={isInChromeExtension}
+          />
+        )}
       </header>
     </div>
   );
