@@ -28,3 +28,16 @@
     width: 0;
     height: 0;
 }
+
+/* 在文件末尾添加以下样式 */
+.chrome-extension .playlist-container {
+    max-height: 300px;
+}
+
+.chrome-extension .playlist-header {
+    padding: 5px;
+}
+
+.chrome-extension .playlist-drag-handle {
+    margin-bottom: 5px;
+}

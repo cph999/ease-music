@@ -1,3 +1,5 @@
+/* global chrome */
+
 import './App.css';
 import PlayList from './components/PlayList.tsx';
 import 'react-vant/es/styles';
@@ -8,7 +10,7 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: "https://app102.acapp.acwing.com.cn/api",
-    // baseURL: "http://localhost:8809/api",
+  // baseURL: "http://localhost:8809/api",
 
   timeout: 5000,
 });
@@ -60,12 +62,18 @@ function App() {
     Toast.fail(currentSong.title + ' 播放出错，请稍后重试');
   };
 
+  // 修改 isInChromeExtension 函数
+  const isInChromeExtension = () => {
+    return typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+  };
+
   return (
-    <div className="App">
+    <div className={`App ${isInChromeExtension() ? 'chrome-extension' : ''}`}>
       <header className="App-header">
         <div className="music-container">
           {currentSong && (
             <>
+
               <Image src={currentSong.cover} className="App-logo" alt="logo" round fit="cover" />
               <MusicPlayer
                 currentSong={currentSong}
@@ -80,6 +88,7 @@ function App() {
           setCurrentSong={setCurrentSong}
           currentSong={currentSong}
           playlist={playlist}
+          isInChromeExtension={isInChromeExtension}
         />
       </header>
     </div>

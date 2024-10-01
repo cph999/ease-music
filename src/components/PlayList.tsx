@@ -4,8 +4,11 @@ import { FloatingPanel } from 'react-vant';
 import MusicItem from './MusicItem.tsx';
 import './PlayList.css'; // 新增这一行
 
-const PlayList = ({ setCurrentSong, currentSong, playlist }) => {
+const PlayList = ({ setCurrentSong, currentSong, playlist, isInChromeExtension }) => {
     const [finished, setFinished] = useState<boolean>(false);
+    const displayStyle = isInChromeExtension ? { display: 'inline' } : { display: 'none' };
+    console.log("isInChromeExtension", isInChromeExtension)
+    console.log("displayStyle", displayStyle)
 
     const handleSongClick = (song) => {
         setCurrentSong(song);
@@ -21,16 +24,17 @@ const PlayList = ({ setCurrentSong, currentSong, playlist }) => {
     };
 
     return (
-        <FloatingPanel 
-            anchors={[100, 200, window.innerHeight * 0.7]} 
+        <FloatingPanel
+            anchors={[100, 200, window.innerHeight * 0.7]}
+            style={displayStyle}
         >
             <div className="playlist-container">
                 <PullRefresh onRefresh={onRefresh}>
                     <List finished={finished} onLoad={onLoadRefresh}>
                         {playlist.map((obj, i) => (
-                            <MusicItem 
-                                key={i} 
-                                item={obj} 
+                            <MusicItem
+                                key={i}
+                                item={obj}
                                 onSongClick={() => handleSongClick(obj)}
                                 isPlaying={currentSong && currentSong.title === obj.title}
                             />

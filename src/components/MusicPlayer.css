@@ -74,3 +74,25 @@
 .play-pause {
     margin: 0 20px; /* 为播放/暂停按钮添加额外的边距 */
 }
+
+/* 在文件末尾添加以下样式 */
+.chrome-extension .music-player {
+    padding: 10px;
+    max-width: 300px;
+}
+
+.chrome-extension .music-title {
+    font-size: 1em;
+}
+
+.chrome-extension .music-artist {
+    font-size: 0.8em;
+}
+
+.chrome-extension .player-controls {
+    width: 180px;
+}
+
+.chrome-extension .progress-bar {
+    max-width: 250px;
+}
