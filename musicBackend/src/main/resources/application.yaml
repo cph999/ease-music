@@ -1,0 +1,31 @@
+server:
+  port: 8809
+  servlet:
+    context-path: /
+
+
+
+
+# 框架配置
+spring:
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://39.100.90.48:3306/music?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    type: com.zaxxer.hikari.HikariDataSource # 数据源类型
+    driver-class-name: com.mysql.jdbc.Driver # MySql的驱动
+    username: root # 数据库账号
+    password: ccpphh130. # 数据库密码
+  # Redis配置
+  redis:
+    host: 39.100.90.48
+    port: 6379        # Redis端口
+    password: ccpphh130.       # Redis密码
+    database: 1       # 数据库索引
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+# Mybatis-plus配置 【是否开启SQL日志输出】
+#mybatis-plus:
+#    configuration:
+#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

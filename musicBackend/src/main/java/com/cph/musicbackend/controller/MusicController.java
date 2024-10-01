@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.mapper.MusicMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,4 +19,5 @@ public class MusicController {
     public List<Music> getMusciList() {
         return musicMapper.selectList(new QueryWrapper<Music>());
     }
+
 }

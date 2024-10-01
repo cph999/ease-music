@@ -34,16 +34,21 @@ public class CronJob {
     public void sayHello() throws InterruptedException {
         List<Music> musics = musicMapper.selectList(null);
         for (Music music : musics) {
-            try {
-
+            WebDriver driver = null;
+            try{
                 if (music.getLastUpdateTime() == null || dateJudge(music.getLastUpdateTime()) || !music.getUrl().startsWith("https")) {
                     System.setProperty("webdriver.chrome.driver", "D:\\chromedriver-win64\\chromedriver.exe");
+//                    System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
                     ChromeOptions options = new ChromeOptions();
                     options.addArguments("--auto-open-devtools-for-tabs");
+//                    options.addArguments("--headless"); // 添加无头模式
+//                    options.addArguments("--no-sandbox");
+                    options.addArguments("--disable-dev-shm-usage");
+//                    options.setBinary("/root/projects/ease-music/chrome-linux64/chrome");
                     Map<String, Object> loggingPrefs = new HashMap<>();
                     loggingPrefs.put("performance", "ALL");
                     options.setCapability("goog:loggingPrefs", loggingPrefs); // 启用性能日志
-                    WebDriver driver = new ChromeDriver(options);
+                    driver = new ChromeDriver(options);
                     driver.get(url + music.getTitle());
                     WebElement elementToClick = driver.findElements(By.className("music-link")).get(0);
                     elementToClick.click();
@@ -79,13 +84,17 @@ public class CronJob {
 
 
                     Thread.sleep(10000);
+                    driver.close();
 
                 }
-            } catch (Exception e) {
-                music.setUrl(e.getMessage());
-                music.setLastUpdateTime(new Date());
-                musicMapper.updateById(music);
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                if (driver != null) {
+                    driver.quit(); // 确保关闭 WebDriver 实例
+                }
             }
+
 
         }
     }
@@ -94,10 +103,11 @@ public class CronJob {
     public void init() throws InterruptedException {
         sayHello();
     }
+
     public boolean dateJudge(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(java.util.Calendar.HOUR_OF_DAY, -2);
+        calendar.add(java.util.Calendar.HOUR_OF_DAY, -1);
         return date.before(calendar.getTime());
     }
 }
