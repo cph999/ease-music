@@ -18,9 +18,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class CronJob {
@@ -37,14 +40,14 @@ public class CronJob {
             WebDriver driver = null;
             try{
                 if (music.getLastUpdateTime() == null || dateJudge(music.getLastUpdateTime()) || !music.getUrl().startsWith("https")) {
-                    System.setProperty("webdriver.chrome.driver", "D:\\chromedriver-win64\\chromedriver.exe");
-//                    System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+//                    System.setProperty("webdriver.chrome.driver", "D:\\chromedriver-win64\\chromedriver.exe");
+                    System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
                     ChromeOptions options = new ChromeOptions();
                     options.addArguments("--auto-open-devtools-for-tabs");
-//                    options.addArguments("--headless"); // 添加无头模式
-//                    options.addArguments("--no-sandbox");
+                    options.addArguments("--headless"); // 添加无头模式
+                    options.addArguments("--no-sandbox");
                     options.addArguments("--disable-dev-shm-usage");
-//                    options.setBinary("/root/projects/ease-music/chrome-linux64/chrome");
+                    options.setBinary("/root/projects/ease-music/chrome-linux64/chrome");
                     Map<String, Object> loggingPrefs = new HashMap<>();
                     loggingPrefs.put("performance", "ALL");
                     options.setCapability("goog:loggingPrefs", loggingPrefs); // 启用性能日志
@@ -63,6 +66,9 @@ public class CronJob {
                     WebDriverWait wait = new WebDriverWait(driver, 10); // 等待最长10秒
                     WebElement nextElementToClick = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/div[1]/div[1]/div[1]")));
 
+                    WebElement backgroundUrl = driver.findElement(By.className("aplayer-pic"));
+                    WebElement author = driver.findElement(By.className("aplayer-author"));
+
                     nextElementToClick.click(); // 执行点击
                     Thread.sleep(5000);
 
@@ -76,6 +82,16 @@ public class CronJob {
                             String asString = jsonElement.getAsString();
                             System.out.println("请求的 URL: " + asString);
                             music.setUrl(asString);
+                            if(author != null) music.setArtist(author.getText());
+                            if(backgroundUrl != null) {
+                                String style = backgroundUrl.getAttribute("style");
+                                Pattern pattern = Pattern.compile("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+                                Matcher matcher = pattern.matcher(style);
+                                while(matcher.find()){
+                                    music.setCover(matcher.group());
+                                    break;
+                                }
+                            }
                             music.setLastUpdateTime(new Date());
                             musicMapper.updateById(music);
                             break;

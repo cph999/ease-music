@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class Music {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.AUTO, value = "id")
     private Integer id;
     private String title;
     private String artist;
