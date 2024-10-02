@@ -29,7 +29,11 @@ public class MusicController {
         Assert.hasText(music.getTitle(), "歌曲名字不能为空");
         List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>().like("title", music.getTitle()).isNotNull("last_update_time"));
         if (CollectionUtils.isNotEmpty(musics)) return musics;
-        musicMapper.insert(music);
+        try{
+            musicMapper.insert(music);
+        }catch (Exception e){
+            return e.getMessage();
+        }
         return "您搜索的歌曲不在我们的曲库中，我们已经记录，请稍后重试！";
 
     }
