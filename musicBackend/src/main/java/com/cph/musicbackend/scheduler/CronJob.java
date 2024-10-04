@@ -38,10 +38,10 @@ public class CronJob {
     public void sayHello() throws InterruptedException {
         // 获取当前时间前1小时
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
         Date oneHourAgo = calendar.getTime();
 
-        // SQL 查询条件，获取 last_update_time 为 NULL 或 last_update_time 超过1小时的记录
+        // SQL 查询条件，获取 last_update_time 为 NULL 或 last_update_time 超过2小时的记录
         QueryWrapper<Music> queryWrapper = new QueryWrapper<>();
         queryWrapper.isNull("last_update_time")
                 .or()
@@ -51,7 +51,7 @@ public class CronJob {
 
         List<Music> musics = musicMapper.selectList(queryWrapper);
         if (!CollectionUtils.isEmpty(musics)) {
-            musics = musics.subList(0, Math.min(musics.size() , 7));
+            musics = musics.subList(0, Math.min(musics.size() , 10));
         }
         for (Music music : musics) {
             WebDriver driver = null;
@@ -132,9 +132,9 @@ public class CronJob {
         }
     }
 
-    @PostConstruct
-    public void init() throws InterruptedException {
-        sayHello();
-    }
+//    @PostConstruct
+//    public void init() throws InterruptedException {
+//        sayHello();
+//    }
 
 }
