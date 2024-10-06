@@ -17,4 +17,7 @@ public class Music {
     private String url;
     private String cover;
     private Date lastUpdateTime;
+
+    //是否还保存过，报错过1，没保存过0
+    private Integer isSave;
 }

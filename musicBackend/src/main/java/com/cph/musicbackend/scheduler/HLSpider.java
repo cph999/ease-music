@@ -20,38 +20,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.io.InputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
-public class CronJob {
-
+public class HLSpider {
     @Autowired
     MusicMapper musicMapper;
-    private final String url = "https://www.gequbao.com/s/";
+    private final String url = "https://www.qtings.com/search/filter/tracks/";
 
     @Value("${file.upload.url}")
     private String uploadUrl;
 
     @Value("${file.upload.path}")
     private String path;
+
     @Scheduled(cron = "0 0 */1 * * ?")
-    public void sayHello() throws InterruptedException {
+    public void startSpider() throws InterruptedException {
         // SQL 查询条件，获取 last_update_time 为 NULL 或 last_update_time 超过2小时的记录
         QueryWrapper<Music> queryWrapper = new QueryWrapper<>();
         queryWrapper.isNull("is_save")
-                .or().eq("is_save",0).last("limit 8");
+                .or().eq("is_save", 0).last("limit 6");
 
         List<Music> musics = musicMapper.selectList(queryWrapper);
-
+        musics = musics.stream().filter(m -> !judgeContainsStr(m.getTitle())).collect(Collectors.toList());
         for (Music music : musics) {
             WebDriver driver = null;
             try {
@@ -69,32 +74,28 @@ public class CronJob {
                 driver = new ChromeDriver(options);
                 driver.get(url + music.getTitle());
                 Thread.sleep(2000);
-                WebElement elementToClick = driver.findElements(By.className("music-link")).get(0);
-                elementToClick.click();
-                String originalWindow = driver.getWindowHandle();
-
-                for (String windowHandle : driver.getWindowHandles()) {
-                    if (!windowHandle.equals(originalWindow)) {
-                        driver.switchTo().window(windowHandle); // 切换到新窗口
-                        break;
-                    }
+                WebElement playDiv = driver.findElements(By.className("song-play-btn")).get(0);
+                playDiv.click();
+                Thread.sleep(10000);
+                List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[4]/div[1]/div/div/div[1]/div[3]/div[1]/a/img"));
+                if(!CollectionUtils.isEmpty(elements)) {
+                    WebElement element = elements.get(0);
+                    music.setCover(element.getAttribute("src"));
                 }
-                WebDriverWait wait = new WebDriverWait(driver, 10); // 等待最长10秒
-                WebElement nextElementToClick = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/div[1]/div[1]/div[1]")));
-
-                WebElement backgroundUrl = driver.findElement(By.className("aplayer-pic"));
-                WebElement author = driver.findElement(By.className("aplayer-author"));
-
-                nextElementToClick.click(); // 执行点击
-                Thread.sleep(5000);
-
+                WebElement element = driver.findElement(By.xpath("/html/body/div[4]/div[1]/div/div/div[1]/div[3]/div[2]/div[3]/div[1]/a"));
+                if(element != null) music.setArtist(element.getText());
                 LogEntries logEntries = driver.manage().logs().get(LogType.PERFORMANCE);
                 for (LogEntry entry : logEntries) {
                     String message = entry.getMessage();
                     // 检查请求是否包含特定 URL 或特定关键字
-                    if (message.contains("sycdn.kuwo.cn")) {
+                    if (!message.contains("get.php") && (message.contains("qqmusic") || (message.contains("www.qtings.com") && message.contains("mp3")))) {
                         JsonObject jsonMessage = JsonParser.parseString(message).getAsJsonObject();
-                        JsonElement jsonElement = jsonMessage.getAsJsonObject("message").getAsJsonObject("params").getAsJsonObject("request").get("url");
+                        JsonElement jsonElement = null;
+                        try{
+                            jsonElement = jsonMessage.getAsJsonObject("message").getAsJsonObject("params").getAsJsonObject("headers").get("location");
+                        }catch (Exception e){
+                            jsonElement = jsonMessage.getAsJsonObject("message").getAsJsonObject("params").getAsJsonObject("request").get("url");
+                        }
                         String mp3Url = jsonElement.getAsString();
                         // 下载并保存MP3文件
                         String fileName = music.getId() + ".mp3";
@@ -104,23 +105,12 @@ public class CronJob {
                         downloadFile(mp3Url, filePath);
                         music.setIsSave(1);
 
-                        if (author != null) music.setArtist(author.getText());
-                        if (backgroundUrl != null) {
-                            String style = backgroundUrl.getAttribute("style");
-                            Pattern pattern = Pattern.compile("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
-                            Matcher matcher = pattern.matcher(style);
-                            while (matcher.find()) {
-                                music.setCover(matcher.group());
-                                break;
-                            }
-                        }
                         music.setLastUpdateTime(new Date());
                         musicMapper.updateById(music);
                         break;
+
                     }
                 }
-
-                Thread.sleep(15000);
                 driver.close();
 
             } catch (Exception e) {
@@ -133,7 +123,6 @@ public class CronJob {
         }
     }
 
-    // 新增方法：下载文件并保存到本地
     private void downloadFile(String fileUrl, String saveFilePath) {
         try {
             URL url = new URL(fileUrl);
@@ -148,9 +137,14 @@ public class CronJob {
         }
     }
 
-//    @PostConstruct
-//    public void init() throws InterruptedException {
-//        sayHello();
-//    }
+    @PostConstruct
+    public void init() throws InterruptedException {
+        startSpider();
+    }
 
+    public boolean judgeContainsStr(String str) {
+        String regex=".*[a-zA-Z]+.*";
+        Matcher m=Pattern.compile(regex).matcher(str);
+        return m.matches();
+    }
 }

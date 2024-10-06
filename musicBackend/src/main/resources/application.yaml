@@ -32,3 +32,13 @@ spring:
 #mybatis-plus:
 #    configuration:
 #      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+file:
+  upload:
+    path: /root/nginx/share/nginx/media/
+    url: https://app102.acapp.acwing.com.cn/media/
+
+#
+#file:
+#  upload:
+#    path: D://audio//
+#    url: https://app102.acapp.acwing.com.cn/media/

@@ -260,8 +260,8 @@ function sendAudioToServer(audioBlob) {
   var timestamp = Date.parse(new Date());
   formData.append('audio', audioBlob, timestamp + '.wav');
 
-  // fetch('https://app102.acapp.acwing.com.cn/api/uploadAudio', {
-    fetch('http://localhost:8809/api/uploadAudio', {
+  fetch('https://app102.acapp.acwing.com.cn/api/uploadAudio', {
+    // fetch('http://localhost:8809/api/uploadAudio', {
     method: 'POST',
     body: formData
   })
@@ -381,7 +381,8 @@ function displaySongList(songs) {
 
 function sendSongInfo(songName, singerName) {
   console.log(`添加歌曲信息：${songName} - ${singerName}`);
-  fetch('http://localhost:8809/api/add', {
+  // fetch('http://localhost:8809/api/add', {
+    fetch('https://app102.acapp.acwing.com.cn/api/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

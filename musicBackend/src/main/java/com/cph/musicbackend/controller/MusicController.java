@@ -8,6 +8,7 @@ import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.mapper.MusicMapper;
 import com.cph.musicbackend.rd3.MusicRecUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +25,13 @@ public class MusicController {
     @Autowired
     MusicMapper musicMapper;
 
+    @Value("${file.upload.path}")
+    private String path;
+
     @GetMapping("/api/musicList")
     public List<Music> getMusciList() {
-        return musicMapper.selectList(new QueryWrapper<Music>());
+        return musicMapper.selectList(new QueryWrapper<Music>()
+                .like("url", "https://app102.acapp.acwing.com.cn").orderByDesc("id"));
     }
 
     @PostMapping("/api/search")
@@ -63,8 +68,7 @@ public class MusicController {
         try {
             String fileName = file.getOriginalFilename();
             // 指定文件保存路径
-//            String uploadDir = "/root/nginx/share/nginx/media/";
-            String uploadDir = "D:\\audio\\";
+            String uploadDir = path;
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
@@ -72,7 +76,7 @@ public class MusicController {
             // 保存文件
             File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
             file.transferTo(destFile);
-            return  MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
+            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
 
         } catch (IOException e) {
             return "{\"error\": \"" + e.getMessage() + "\"}";
