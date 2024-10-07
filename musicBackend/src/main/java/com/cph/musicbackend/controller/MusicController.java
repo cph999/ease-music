@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.cph.musicbackend.aspect.RecognizeAddress;
+import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.entity.Music;
+import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
+import com.cph.musicbackend.mapper.UserMapper;
 import com.cph.musicbackend.rd3.MusicRecUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,19 +33,32 @@ public class MusicController {
     @Value("${file.upload.path}")
     private String path;
 
+    @Autowired
+    UserMapper userMapper;
+
     @GetMapping("/api/musicList")
+    @RecognizeAddress
     public List<Music> getMusciList() {
-        return musicMapper.selectList(new QueryWrapper<Music>()
-                .like("url", "https://app102.acapp.acwing.com.cn").orderByDesc("id"));
+        User currentUser = UserContext.getCurrentUser();
+        if(!CollectionUtils.isEmpty(currentUser.getMusics())){
+            return currentUser.getMusics();
+        }
+        //个性化音乐列表
+        User personalMuicList = userMapper.getPersonalMuicList(currentUser);
+        return personalMuicList.getMusics();
     }
 
     @PostMapping("/api/search")
+    @RecognizeAddress
     public Object search(@RequestBody Music music) {
+        User currentUser = UserContext.getCurrentUser();
         Assert.hasText(music.getTitle(), "歌曲名字不能为空");
         List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>().like("title", music.getTitle()).isNotNull("last_update_time"));
         if (CollectionUtils.isNotEmpty(musics)) return musics;
         try {
             musicMapper.insert(music);
+            currentUser.setMusics(Arrays.asList(music));
+            userMapper.addDefaultMusics(currentUser);
         } catch (Exception e) {
             return e.getMessage();
         }

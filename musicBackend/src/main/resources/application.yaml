@@ -29,16 +29,21 @@ spring:
     pathmatch:
       matching-strategy: ant-path-matcher
 # Mybatis-plus配置 【是否开启SQL日志输出】
-#mybatis-plus:
-#    configuration:
-#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mybatis/*.xml
+
 file:
   upload:
     path: /root/nginx/share/nginx/media/
     url: https://app102.acapp.acwing.com.cn/media/
-
-#
 #file:
 #  upload:
 #    path: D://audio//
 #    url: https://app102.acapp.acwing.com.cn/media/
+
+logging:
+  level:
+    com.cph.musicbackend.mapper: TRACE
+    org.mybatis: DEBUG

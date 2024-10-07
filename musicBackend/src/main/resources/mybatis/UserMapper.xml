@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cph.musicbackend.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.cph.musicbackend.entity.User">
+        <id column="user_id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="mac" property="mac" jdbcType="VARCHAR"/>
+        <result column="ip_address" property="ipAddress" jdbcType="VARCHAR"/>
+        <collection property="musics" ofType="com.cph.musicbackend.entity.Music">
+            <id column="music_id" property="id" jdbcType="INTEGER"/>
+            <result column="title" property="title" jdbcType="VARCHAR"/>
+            <result column="artist" property="artist" jdbcType="VARCHAR"/>
+            <result column="duration" property="duration" jdbcType="VARCHAR"/>
+            <result column="url" property="url" jdbcType="VARCHAR"/>
+            <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP"/>
+            <result column="cover" property="cover" jdbcType="VARCHAR"/>
+            <result column="is_save" property="isSave" jdbcType="INTEGER"/>
+        </collection>
+    </resultMap>
+
+    <select id="getPersonalMuicList" resultMap="BaseResultMap">
+        SELECT a.id AS user_id,
+               a.username,
+               a.mac,
+               a.ip_address,
+               c.id AS music_id,
+               c.title,
+               c.artist,
+               c.duration,
+               c.url,
+               c.last_update_time,
+               c.cover,
+               c.is_save
+        FROM user a
+                 LEFT JOIN user_music b ON a.id = b.uid
+                 LEFT JOIN music c ON b.mid = c.id
+        WHERE a.ip_address = #{u.ipAddress}
+          AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
+        limit 1
+    </select>
+
+    <insert id="addDefaultMusics">
+        insert into user_music(uid,mid) values
+        <foreach collection="u.musics"  separator="," item="item">
+            (#{u.id},#{item.id})
+        </foreach>
+    </insert>
+</mapper>
