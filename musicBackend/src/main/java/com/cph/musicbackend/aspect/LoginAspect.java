@@ -16,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 @Aspect
@@ -64,10 +65,12 @@ public class LoginAspect {
             List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>()
                     .like("url", "https://app102.acapp.acwing.com.cn").last("limit 10").orderByDesc("id"));
             user.setMusics(musics);
-            userMapper.addDefaultMusics(user);
+            userMapper.addDefaultMusics(user, new Date());
             UserContext.setCurrentUser(user);
+        }else{
+            UserContext.setCurrentUser(ipAddress);
         }
-        UserContext.setCurrentUser(ipAddress);
+
         // 执行方法
         Object result = joinPoint.proceed();
         return result;

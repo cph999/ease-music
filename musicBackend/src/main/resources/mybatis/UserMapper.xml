@@ -39,13 +39,28 @@
                  LEFT JOIN music c ON b.mid = c.id
         WHERE a.ip_address = #{u.ipAddress}
           AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
-        limit 1
+        order by b.created_time desc
     </select>
 
     <insert id="addDefaultMusics">
-        insert into user_music(uid,mid) values
-        <foreach collection="u.musics"  separator="," item="item">
-            (#{u.id},#{item.id})
+        insert into user_music(uid,mid,created_time) values
+        <foreach collection="u.musics" separator="," item="item">
+            (#{u.id},#{item.id},#{ct})
         </foreach>
     </insert>
+
+    <select id="getFollowedMusic"  resultType="int">
+        select mid
+        from user_music
+        where uid = #{u.id}
+    </select>
+
+    <update id="updateExistMusic">
+        update user_music set created_time = #{ct}
+        where mid in (
+        <foreach collection="eids" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </update>
 </mapper>

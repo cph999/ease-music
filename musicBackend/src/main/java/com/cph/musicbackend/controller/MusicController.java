@@ -1,9 +1,7 @@
 package com.cph.musicbackend.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.cph.musicbackend.aspect.RecognizeAddress;
 import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.entity.Music;
@@ -20,7 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -40,7 +40,7 @@ public class MusicController {
     @RecognizeAddress
     public List<Music> getMusciList() {
         User currentUser = UserContext.getCurrentUser();
-        if(!CollectionUtils.isEmpty(currentUser.getMusics())){
+        if (!CollectionUtils.isEmpty(currentUser.getMusics())) {
             return currentUser.getMusics();
         }
         //个性化音乐列表
@@ -53,12 +53,23 @@ public class MusicController {
     public Object search(@RequestBody Music music) {
         User currentUser = UserContext.getCurrentUser();
         Assert.hasText(music.getTitle(), "歌曲名字不能为空");
-        List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>().like("title", music.getTitle()).isNotNull("last_update_time"));
-        if (CollectionUtils.isNotEmpty(musics)) return musics;
+        List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>().like("title", music.getTitle()).eq("is_save", 1)
+                .isNotNull("last_update_time"));
+        List<Integer> followedMusic = userMapper.getFollowedMusic(currentUser);
+        List<Music> insertMusics = musics.stream().filter(m -> !followedMusic.contains(m.getId())).collect(Collectors.toList());
+        List<Music> updateMusics = musics.stream().filter(m -> followedMusic.contains(m.getId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(musics)) {
+            if (CollectionUtils.isNotEmpty(insertMusics)) {
+                currentUser.setMusics(insertMusics);
+                userMapper.addDefaultMusics(currentUser, new Date());
+            }
+            if (CollectionUtils.isNotEmpty(updateMusics)) {
+                userMapper.updateExistMusic(updateMusics.stream().map(Music::getId).collect(Collectors.toList()), new Date());
+            }
+            return musics;
+        }
         try {
             musicMapper.insert(music);
-            currentUser.setMusics(Arrays.asList(music));
-            userMapper.addDefaultMusics(currentUser);
         } catch (Exception e) {
             return e.getMessage();
         }
