@@ -6,14 +6,18 @@ import 'react-vant/es/styles';
 import MusicPlayer from './components/MusicPlayer.tsx';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Image, Toast, Search } from 'react-vant'
-import axios from 'axios';
+import { instance } from './utils/api';
 
-const instance = axios.create({
-  baseURL: "https://app102.acapp.acwing.com.cn/api",
-  // baseURL: "http://localhost:8809/api",
+// 添加获取 URL 参数的函数
+function getParameterByName(name, url = window.location.href) {
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
-  timeout: 5000,
-});
 
 function App() {
   const [currentSong, setCurrentSong] = useState(null);
@@ -22,8 +26,36 @@ function App() {
   const [showSearch, setShowSearch] = useState(false);
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
+  const [isShowPlayList, setIsShowPlayList] = useState(false);
+  // 添加 sourceEnv 状态
+  const [sourceEnv, setSourceEnv] = useState(null);
+  const playlistRef = useRef(null);
 
   useEffect(() => {
+    // 获取 sourceEnv 参数
+    const envParam = getParameterByName('sourceEnv');
+    setSourceEnv(envParam);
+    console.log('sourceEnv:', envParam);
+
+    // 根据 sourceEnv 的值执行相应的操作
+    if (envParam) {
+      switch (envParam) {
+        case 'production':
+          // 生产环境的逻辑
+          console.log('Running in production environment');
+          // 这里可以添加生产环境特定的逻辑
+          break;
+        case 'plugin':
+          // 开发环境的逻辑
+          console.log('Running in development environment');
+          // 这里可以添加开发环境特定的逻辑
+          break;
+        default:
+          // 默认逻辑
+          console.log('Running in default environment');
+      }
+    }
+
     // 获取播放列表
     const fetchPlaylist = async () => {
       try {
@@ -68,8 +100,7 @@ function App() {
 
   // 修改 isInChromeExtension 函数
   const isInChromeExtension = () => {
-    return true; // 现在总是返回 true
-    // return false;
+    return sourceEnv === 'plugin'
   };
 
   const handleKeyDown = useCallback((event) => {
@@ -87,7 +118,10 @@ function App() {
       setShowSearch(false);
       setSearch('');
     }
-  }, []);
+    if (playlistRef.current && !playlistRef.current.contains(event.target) && isShowPlayList) {
+      setIsShowPlayList(false);
+    }
+  }, [showSearch, isShowPlayList]);
 
   useEffect(() => {
     // 添加事件监听器
@@ -106,6 +140,14 @@ function App() {
       searchInputRef.current.focus();
     }
   }, [showSearch]);
+
+  const updateSongInPlaylist = (updatedSong) => {
+    setPlaylist(prevPlaylist => 
+      prevPlaylist.map(song => 
+        song.id === updatedSong.id ? updatedSong : song
+      )
+    );
+  };
 
   return (
     <div className={`App ${isInChromeExtension() ? 'chrome-extension' : ''}`}>
@@ -131,7 +173,7 @@ function App() {
               onSearch={async (val) => {
                 const response = await instance.post("/search", { "title": val });
                 if (response.data instanceof Array) {
-                  // 设置第一首歌为当前歌曲
+                  // 设置一首歌为当前歌曲
                   if (response.data.length > 0) {
                     setCurrentSong(response.data[0]);
                   }
@@ -168,18 +210,24 @@ function App() {
                 onPrevSong={handlePrevSong}
                 onNextSong={handleNextSong}
                 onError={handleError}
+                setIsShowPlayList={setIsShowPlayList}
+                setCurrentSong={setCurrentSong}
+                updateSongInPlaylist={updateSongInPlaylist}  // 新增这一行
               />
+              {isShowPlayList && (
+                <div ref={playlistRef}>
+                  <PlayList
+                    setCurrentSong={setCurrentSong}
+                    currentSong={currentSong}
+                    playlist={playlist}
+                    setIsShowPlayList={setIsShowPlayList}
+                    isShowPlayList={isShowPlayList}
+                  />
+                </div>
+              )}
             </>
           )}
         </div>
-        {!isInChromeExtension() && (
-          <PlayList
-            setCurrentSong={setCurrentSong}
-            currentSong={currentSong}
-            playlist={playlist}
-            isInChromeExtension={isInChromeExtension}
-          />
-        )}
       </header>
     </div>
   );

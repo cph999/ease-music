@@ -16,23 +16,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function createPlayer() {
   player = document.createElement('div');
   player.id = 'ease-music-player';
+  
+  const targetUrl = "https://app102.acapp.acwing.com.cn";
+
   player.innerHTML = `
-    <div id="ease-music-header" style="cursor: move; background-color: #f0f0f0; padding: 5px;">拖动此处移动播放器</div>
-    <iframe src="${chrome.runtime.getURL('player.html')}" allowfullscreen></iframe>
+    <div id="ease-music-header">拖动此处移动播放器</div>
+    <iframe src="${targetUrl}"></iframe>
     <div class="ease-music-controls">
       <button id="ease-music-record">开始识别</button>
       <button id="ease-music-close">关闭播放器</button>
     </div>
-  `;
-  player.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 10000;
   `;
   document.body.appendChild(player);
 

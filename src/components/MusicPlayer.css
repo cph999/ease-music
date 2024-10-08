@@ -35,8 +35,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 200px; /* 增加宽度 */
-    margin-bottom: 10px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.main-controls {
+    display: flex;
+    align-items: center;
 }
 
 .progress-bar {
@@ -63,8 +68,13 @@
 }
 
 .control-icon {
+    margin: 0 10px;
     cursor: pointer;
     transition: transform 0.2s ease;
+}
+
+.control-side {
+    margin-left: auto;
 }
 
 .control-icon:hover {
@@ -72,7 +82,8 @@
 }
 
 .play-pause {
-    margin: 0 20px; /* 为播放/暂停按钮添加额外的边距 */
+    margin: 0 20px;
+    /* 为播放/暂停按钮添加额外的边距 */
 }
 
 /* 在文件末尾添加以下样式 */

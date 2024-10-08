@@ -20,11 +20,5 @@
       "js": ["content.js"],
       "css": ["content.css"]
     }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["player.html"],
-      "matches": ["<all_urls>"]
-    }
   ]
 }

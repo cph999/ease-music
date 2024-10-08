@@ -1,31 +1,25 @@
-/* 隐藏浏览器右侧滚动条 */
-/* body {
-  overflow-y: hidden !important;
-} */
-
 /* 播放器样式 */
 #ease-music-player {
   position: fixed;
   top: 10%;
   right: 0;
-  width: 23%;
-  height: calc(50% + 35px); /* 增加高度以容纳按钮 */
+  width: 25%;
+  height: 90%;
   background: white;
   border: 1px solid #ccc;
   z-index: 9999;
   display: none;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow: hidden;
-  pointer-events: auto; /* 确保播放器可以接收鼠标事件 */
+  pointer-events: auto;
 }
 
 #ease-music-player iframe {
-  width: calc(100% / 0.65);
-  height: calc((100% - 35px) / 0.65); /* 调整 iframe 高度 */
+  width: 100%;
+  height: 100%;
   border: none;
-  transform: scale(0.65);
+  transform: scale(1);
   transform-origin: 0 0;
-  display: block;
 }
 
 #ease-music-player .ease-music-controls {
@@ -35,18 +29,18 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 5px;
+  padding: 2.5px;
   background-color: #f0f0f0;
 }
 
 /* 按钮通用样式 */
 #ease-music-player button {
-  padding: 5px 10px;
+  padding: 2.5px 5px;
   border: none;
   background-color: #4CAF50;
   color: white;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   transition: background-color 0.3s;
   flex: 1; /* 让按钮平均分配空间 */
 }
@@ -57,13 +51,9 @@
 
 /* 录音按钮特定样式 */
 #ease-music-record {
-  margin-right: 5px;
+  margin-right: 2.5px;
 }
 
-/* 移除之前的绝对定位样式 */
-#ease-music-close {
-  /* 移除之前的样式 */
-}
 
 /* 如果需要，可以为关闭按钮添加特定样式 */
 #ease-music-close {
@@ -72,4 +62,11 @@
 
 #ease-music-close:hover {
   background-color: #d32f2f;
+}
+
+#ease-music-header {
+  cursor: move;
+  background-color: #f0f0f0;
+  padding: 2.5px;
+  font-size: 7px;
 }

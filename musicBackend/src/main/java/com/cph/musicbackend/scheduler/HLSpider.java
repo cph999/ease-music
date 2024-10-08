@@ -137,10 +137,10 @@ public class HLSpider {
         }
     }
 
-    @PostConstruct
-    public void init() throws InterruptedException {
-        startSpider();
-    }
+//    @PostConstruct
+//    public void init() throws InterruptedException {
+//        startSpider();
+//    }
 
     public boolean judgeContainsStr(String str) {
         String regex=".*[a-zA-Z]+.*";

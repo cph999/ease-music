@@ -18,6 +18,7 @@
             <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP"/>
             <result column="cover" property="cover" jdbcType="VARCHAR"/>
             <result column="is_save" property="isSave" jdbcType="INTEGER"/>
+            <result column="like_state" property="likeState" jdbcType="INTEGER"/>
         </collection>
     </resultMap>
 
@@ -26,6 +27,7 @@
                a.username,
                a.mac,
                a.ip_address,
+               b.like_state,
                c.id AS music_id,
                c.title,
                c.artist,
@@ -62,5 +64,10 @@
             #{item}
         </foreach>
         )
+    </update>
+
+    <update id="updateLikeState">
+        update user_music set like_state = #{likeState}
+        where uid = #{uid} and mid = #{mid}
     </update>
 </mapper>

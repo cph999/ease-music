@@ -15,7 +15,7 @@
 }
 
 .App-header {
-  background-color: #f8f8ec;
+  background: linear-gradient(to bottom,#DDA0DD, #FFB6C1);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -34,6 +34,7 @@
   width: 100%;
   max-width: 400px;
   margin-bottom: 15px;
+  height: 100%;
 }
 
 .App-link {
@@ -70,7 +71,7 @@
   max-width: 300px;
 }
 
-/* 添加以下代码以仅删除主页面滚动条 */
+/* 添加以下代码以仅删除主页面滚��条 */
 html, body {
   overflow: hidden;
 }
@@ -92,11 +93,11 @@ html, body {
 }
 
 .image-container {
-  width: 100%;
-  height: 100%;
+  width: 90vw;  /* 设置固定宽度 */
+  height: 90vw; /* 设置固定高度 */
   overflow: hidden;
   border-radius: 50%;
-  margin: 0 auto;
+  margin: 20px auto; /* 上下间距20px，左右自动居中 */
 }
 
 .App-logo {
@@ -115,4 +116,10 @@ html, body {
 
 .chrome-extension .music-container {
   padding: 20px;
+}
+
+/* 为 chrome 扩展版本设置稍小一些的尺寸 */
+.chrome-extension .image-container {
+  width: 150px;
+  height: 150px;
 }

@@ -89,6 +89,15 @@ public class MusicController {
         return "添加成功";
     }
 
+    @PostMapping("/api/like")
+    @RecognizeAddress
+    public Object like(@RequestBody Music song) {
+        User currentUser = UserContext.getCurrentUser();
+        userMapper.updateLikeState(currentUser.getId(), song.getId(),song.getLikeState());
+        if(song.getLikeState() == 1)return "已添加我的收藏！";
+        else return "取消收藏成功！";
+    }
+
     @PostMapping("/api/uploadAudio")
     public Object recongnizeMusic(@RequestParam("audio") MultipartFile file) {
         if (file.isEmpty()) {
@@ -110,6 +119,5 @@ public class MusicController {
         } catch (IOException e) {
             return "{\"error\": \"" + e.getMessage() + "\"}";
         }
-
     }
 }

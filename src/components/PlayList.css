@@ -1,43 +1,63 @@
 .playlist-container {
-    height: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px 10px 0 0;
+    padding: 5px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+    max-height: 70vh; /* 设置最大高度 */
     display: flex;
     flex-direction: column;
 }
 
+.playlist-container.show {
+    transform: translateY(0);
+}
+
 .playlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px;
-    text-align: center;
     border-bottom: 1px solid #eee;
 }
 
-.playlist-drag-handle {
-    width: 40px;
-    height: 4px;
-    background-color: #ccc;
-    border-radius: 2px;
-    margin: 0 auto 10px;
+.playlist-title {
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
-.playlist-container .rv-pull-refresh,
+.playlist-close {
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .playlist-container .rv-list {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* 为 iOS 设备添加惯性滚动 */
 }
 
-.playlist-container::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+.playlist-container .rv-list::-webkit-scrollbar {
+    width: 5px;
 }
 
-/* 在文件末尾添加以下样式 */
-.chrome-extension .playlist-container {
-    max-height: 300px;
+.playlist-container .rv-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
 }
 
-.chrome-extension .playlist-header {
-    padding: 5px;
-}
-
-.chrome-extension .playlist-drag-handle {
-    margin-bottom: 5px;
+.playlist-container .rv-list::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
 }

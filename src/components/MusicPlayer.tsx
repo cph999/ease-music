@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import './MusicPlayer.css';
-import { Arrow, ArrowLeft, PauseCircle, PlayCircle } from '@react-vant/icons';
+import { Arrow, ArrowLeft, PauseCircle, PlayCircle, Bars, LikeO, Like } from '@react-vant/icons';
 import { Slider } from 'react-vant';
+import { instance } from '../utils/api';
+import { Toast } from 'react-vant/lib';
 
 // 辅助函数：将秒数转换为 "分:秒" 格式
 const formatTime = (seconds: number): string => {
@@ -11,13 +13,33 @@ const formatTime = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError }) => {
+const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError, setIsShowPlayList, setCurrentSong, updateSongInPlaylist }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
   const [isPlaying, setIsPlaying] = useState(true);
   const playerRef = useRef<ReactAudioPlayer>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [sliderValue, setSliderValue] = useState(0);
+
+  const handleLike = async (status) => {
+    const updatedSong = { ...currentSong, likeState: status };
+    setCurrentSong(updatedSong);
+    console.log('准备发送的数据:', { song: updatedSong });
+
+    try {
+      const response = await instance.post('/like', {
+        id: updatedSong.id,
+        likeState: status
+      });
+      Toast.success(response.data);
+      
+      // 更新播放列表中的歌曲状态
+      updateSongInPlaylist(updatedSong);
+    } catch (error) {
+      console.error('发送喜欢状态时出错:', error);
+      Toast.fail('更新喜欢状态失败');
+    }
+  };
 
   useEffect(() => {
     if (currentSong) {
@@ -28,6 +50,7 @@ const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError }) => {
       }
     }
   }, [currentSong]);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,18 +97,9 @@ const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError }) => {
             <h3 className="music-title">{playingMusic.title}</h3>
             <p className="music-artist">{playingMusic.artist}</p>
           </div>
-          <div className="player-controls">
-            <ArrowLeft className="control-icon" fontSize="2em" onClick={onPrevSong} />
-            {isPlaying ? (
-              <PauseCircle className="control-icon play-pause" fontSize="2.5em" onClick={togglePlayPause} />
-            ) : (
-              <PlayCircle className="control-icon play-pause" fontSize="2.5em" color='#f44336' onClick={togglePlayPause} />
-            )}
-            <Arrow className="control-icon" color='#f44336' fontSize="2em" onClick={onNextSong} />
-          </div>
           <div className="progress-bar">
             <Slider
-              barHeight={2}
+              barHeight={4}
               activeColor="#ee0a24"
               value={sliderValue}
               min={0}
@@ -97,6 +111,26 @@ const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError }) => {
               <span>{formatTime(sliderValue)}</span>
               <span>{formatTime(duration)}</span>
             </div>
+          </div>
+          <div className="player-controls">
+            {currentSong.likeState === 1 ? <Like className="control-icon control-side" color={currentSong.likeState ? "red" : "inherit"} fontSize="2em" onClick={
+              () => { handleLike(0) }
+
+            } />
+              : <LikeO className="control-icon control-side" color={currentSong.likeState ? "red" : "inherit"} fontSize="2em" onClick={
+                () => { handleLike(1) }
+              } />
+            }
+            <div className="main-controls">
+              <ArrowLeft className="control-icon" fontSize="2em" onClick={onPrevSong} />
+              {isPlaying ? (
+                <PauseCircle className="control-icon play-pause" fontSize="2.5em" onClick={togglePlayPause} />
+              ) : (
+                <PlayCircle className="control-icon play-pause" fontSize="2.5em" color='#f44336' onClick={togglePlayPause} />
+              )}
+              <Arrow className="control-icon" color='#f44336' fontSize="2em" onClick={onNextSong} />
+            </div>
+            <Bars className="control-icon control-side" fontSize="2em" onClick={() => { setIsShowPlayList(true) }} />
           </div>
           <div className='music-player-wrapper'>
             <ReactAudioPlayer
