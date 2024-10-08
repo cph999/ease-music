@@ -1,4 +1,4 @@
-package com.cph.musicbackend.rd3;
+package com.cph.musicbackend.rd3.xunfei;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

@@ -1,8 +1,12 @@
+// 在文件顶部添加这行代码来进行调试
+console.log('Content script loaded');
+
 let playerVisible = false;
 let player;
 let mediaRecorder;
 let audioChunks = [];
 let recordingTimeout;
+let isRecording = false;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "togglePlayer") {
@@ -16,7 +20,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function createPlayer() {
   player = document.createElement('div');
   player.id = 'ease-music-player';
-  
+
   const targetUrl = "https://app102.acapp.acwing.com.cn";
 
   player.innerHTML = `
@@ -38,66 +42,69 @@ function createPlayer() {
 function togglePlayer() {
   playerVisible = !playerVisible;
   player.style.display = playerVisible ? 'block' : 'none';
-  
+
   // 移除这行代码，不再修改body的overflow
   // document.body.style.overflowY = playerVisible ? 'hidden' : '';
 }
 
 function toggleRecording() {
   const recordButton = document.getElementById('ease-music-record');
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
+  if (isRecording) {
     stopRecording();
     recordButton.textContent = '开始识别';
+    isRecording = false;
   } else {
     startRecording();
     recordButton.textContent = '识别中...';
+    isRecording = true;
   }
 }
 
 function startRecording() {
+  console.log('startRecording function called');  // 添加这行来调试
   audioChunks = [];
-  
+
   // 创建一个新的 AudioContext，设置采样率为 16000Hz
   const audioContext = new (window.AudioContext || window.webkitAudioContext)({
     sampleRate: 16000
   });
-  
+
   // 创建一个 MediaStreamDestination
   const destination = audioContext.createMediaStreamDestination();
-  
+
   // 获取页面中所有的 audio 和 video 元素
   const mediaElements = document.querySelectorAll('audio, video');
-  
+
   mediaElements.forEach(element => {
     if (element.captureStream) {
       // 捕获媒体元素的音频流
       const stream = element.captureStream();
       const source = audioContext.createMediaStreamSource(stream);
-      
+
       // 创建一个 ScriptProcessorNode 用于重采样
       const bufferSize = 4096;
       const scriptNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
-      
+
       scriptNode.onaudioprocess = (audioProcessingEvent) => {
         const inputBuffer = audioProcessingEvent.inputBuffer;
         const outputBuffer = audioProcessingEvent.outputBuffer;
-        
+
         for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
           const inputData = inputBuffer.getChannelData(channel);
           const outputData = outputBuffer.getChannelData(channel);
-          
+
           // 简单的线性插值重采样
           for (let i = 0; i < outputBuffer.length; i++) {
             const index = i * inputBuffer.sampleRate / 16000;
             const indexFloor = Math.floor(index);
             const indexCeil = Math.ceil(index);
             const fraction = index - indexFloor;
-            
+
             outputData[i] = (1 - fraction) * inputData[indexFloor] + fraction * inputData[indexCeil];
           }
         }
       };
-      
+
       source.connect(scriptNode);
       scriptNode.connect(destination);
     }
@@ -105,7 +112,7 @@ function startRecording() {
 
   // 创建 MediaRecorder
   mediaRecorder = new MediaRecorder(destination.stream);
-  
+
   mediaRecorder.ondataavailable = event => {
     audioChunks.push(event.data);
   };
@@ -118,15 +125,19 @@ function startRecording() {
   };
 
   mediaRecorder.start();
-  
-  console.log('实际采样率:', audioContext.sampleRate);
+
+  console.log('Recording started, actual sample rate:', audioContext.sampleRate);
 }
 
 function stopRecording() {
-  if (mediaRecorder) {
+  console.log('stopRecording function called');  // 添加这行来调试
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
     mediaRecorder.stop();
     clearTimeout(recordingTimeout);
     mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    console.log('Recording stopped');
+  } else {
+    console.log('No active recording to stop');
   }
 }
 
@@ -135,18 +146,18 @@ function convertToWav(webmBlob) {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const fileReader = new FileReader();
 
-    fileReader.onload = function(event) {
+    fileReader.onload = function (event) {
       const audioData = event.target.result;
 
-      audioContext.decodeAudioData(audioData, function(buffer) {
+      audioContext.decodeAudioData(audioData, function (buffer) {
         const wavBlob = audioBufferToWav(buffer);
         resolve(wavBlob);
-      }, function(e) {
+      }, function (e) {
         reject('音频解码失败');
       });
     };
 
-    fileReader.onerror = function(error) {
+    fileReader.onerror = function (error) {
       reject('文件读取失败');
     };
 
@@ -252,25 +263,40 @@ function sendAudioToServer(audioBlob) {
   const formData = new FormData();
   var timestamp = Date.parse(new Date());
   formData.append('audio', audioBlob, timestamp + '.wav');
-
+  
   fetch('https://app102.acapp.acwing.com.cn/api/uploadAudio', {
-    // fetch('http://localhost:8809/api/uploadAudio', {
     method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      'Origin': 'chrome-extension://' + chrome.runtime.id
+    },
     body: formData
   })
-  .then(response => response.json())
+  .then(response => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
   .then(data => {
     console.log('服务器响应:', data);
-    if (data.code === "0" && data.data && Array.isArray(data.data)) {
-      displaySongList(data.data);
+    if (data.artist && data.title) {
+      displaySongResult(data);
     } else {
       console.error('未能识别到歌曲');
     }
   })
-  .catch(error => console.error('上传错误:', error));
+  .catch(error => {
+    console.error('上传错误:', error);
+    console.error('Error stack:', error.stack);
+    // 在这里添加错误处理逻辑，比如显示一个错误消息给用户
+  });
 }
 
-function displaySongList(songs) {
+function displaySongResult(song) {
   const resultDiv = document.createElement('div');
   resultDiv.id = 'song-recognition-result';
   resultDiv.style.cssText = `
@@ -282,44 +308,36 @@ function displaySongList(songs) {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    max-height: 60vh;
     width: 300px;
-    overflow-y: auto;
     z-index: 10001;
     font-family: Arial, sans-serif;
     font-size: 14px;
   `;
 
   let html = '<div id="result-header" style="cursor: move; background-color: #f0f0f0; padding: 5px; margin-bottom: 10px;">拖动此处移动结果</div>';
-  html += '<h2 style="color: #333; margin-bottom: 10px; font-size: 16px;">识别结果</h2><ul style="list-style-type: none; padding: 0;">';
-  
-  // 只展示前5首歌曲
-  const displaySongs = songs.slice(0, 5);
-  
-  displaySongs.forEach((song, index) => {
-    html += `
-      <li style="margin-bottom: 8px; padding: 8px; background-color: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <strong style="color: #4a4a4a;">${song.song}</strong><br>
-          <span style="color: #777;">${song.singer}</span>
-        </div>
-        <button class="add-song-info" data-index="${index}" style="
-          background-color: #4CAF50;
-          border: none;
-          color: white;
-          padding: 4px 8px;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 12px;
-          cursor: pointer;
-          border-radius: 3px;
-          transition: background-color 0.3s;
-        ">添加</button>
-      </li>`;
-  });
-  html += '</ul>';
-  
+  html += '<h2 style="color: #333; margin-bottom: 10px; font-size: 16px;">识别结果</h2>';
+
+  html += `
+    <div style="margin-bottom: 8px; padding: 8px; background-color: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="color: #4a4a4a;">${song.title}</strong><br>
+        <span style="color: #777;">${song.artist}</span>
+      </div>
+      <button id="add-song-info" style="
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 4px 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        cursor: pointer;
+        border-radius: 3px;
+        transition: background-color 0.3s;
+      ">添加</button>
+    </div>`;
+
   const closeButton = document.createElement('button');
   closeButton.id = 'close-result';
   closeButton.textContent = '关闭';
@@ -337,7 +355,7 @@ function displaySongList(songs) {
     border-radius: 4px;
     transition: background-color 0.3s;
   `;
-  
+
   resultDiv.innerHTML = html;
   resultDiv.appendChild(closeButton);
   document.body.appendChild(resultDiv);
@@ -354,19 +372,15 @@ function displaySongList(songs) {
     document.body.removeChild(resultDiv);
   });
 
-  // 为每个"添加"按钮添加点击事件
-  resultDiv.querySelectorAll('.add-song-info').forEach(button => {
-    button.addEventListener('click', function() {
-      const index = this.getAttribute('data-index');
-      const song = displaySongs[index];
-      sendSongInfo(song.song, song.singer);
-      
-      // 点击后变灰并禁用
-      this.style.backgroundColor = '#cccccc';
-      this.style.cursor = 'default';
-      this.disabled = true;
-      this.textContent = '已添加';
-    });
+  // 为"添加"按钮添加点击事件
+  document.getElementById('add-song-info').addEventListener('click', function () {
+    sendSongInfo(song.title, song.artist);
+
+    // 点击后变灰并禁用
+    this.style.backgroundColor = '#cccccc';
+    this.style.cursor = 'default';
+    this.disabled = true;
+    this.textContent = '已添加';
   });
 
   makeDraggable(resultDiv, document.getElementById('result-header'));
@@ -374,17 +388,16 @@ function displaySongList(songs) {
 
 function sendSongInfo(songName, singerName) {
   console.log(`添加歌曲信息：${songName} - ${singerName}`);
-  // fetch('http://localhost:8809/api/add', {
-    fetch('https://app102.acapp.acwing.com.cn/api/add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ title: songName, artist: singerName }),
-  })
-  .then(response => response.json())
-  .then(data => console.log('API response:', data))
-  .catch(error => console.error('Error:', error));
+  chrome.runtime.sendMessage({
+    action: "addSong",
+    data: { title: songName, artist: singerName }
+  }, response => {
+    if (response.success) {
+      console.log('API response:', response.data);
+    } else {
+      console.error('Error:', response.error);
+    }
+  });
 }
 
 function makeDraggable(element, dragHandle) {

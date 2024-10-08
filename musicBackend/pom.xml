@@ -98,6 +98,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <!--        acrcloud 音频识别sdk-->
+        <dependency>
+            <groupId>com.acrcloud.sdks</groupId>
+            <artifactId>com.acrcloud.sdks.recognizer</artifactId>
+            <version>1.0.4</version>
+        </dependency>
 
     </dependencies>
 

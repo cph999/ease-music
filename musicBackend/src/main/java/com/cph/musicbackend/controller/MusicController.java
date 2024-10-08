@@ -8,7 +8,8 @@ import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
 import com.cph.musicbackend.mapper.UserMapper;
-import com.cph.musicbackend.rd3.MusicRecUtil;
+import com.cph.musicbackend.rd3.AcrCloudUtil;
+import com.cph.musicbackend.rd3.xunfei.MusicRecUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
@@ -17,13 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
 public class MusicController {
 
 
@@ -35,6 +34,9 @@ public class MusicController {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    AcrCloudUtil acrCloudUtil;
 
     @GetMapping("/api/musicList")
     @RecognizeAddress
@@ -114,7 +116,8 @@ public class MusicController {
             // 保存文件
             File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
             file.transferTo(destFile);
-            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
+            return acrCloudUtil.recongizeByFile(dir.getAbsolutePath() + File.separator + fileName);
+//            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
 
         } catch (IOException e) {
             return "{\"error\": \"" + e.getMessage() + "\"}";

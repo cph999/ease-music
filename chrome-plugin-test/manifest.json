@@ -3,7 +3,13 @@
   "name": "EaseMusic",
   "version": "1.0",
   "description": "一个简单的音乐播放Chrome插件",
-  "permissions": ["activeTab"],
+  "permissions": [
+    "activeTab",
+    "https://app102.acapp.acwing.com.cn/*"
+  ],
+  "host_permissions": [
+    "https://app102.acapp.acwing.com.cn/*"
+  ],
   "action": {
     "default_icon": {
       "16": "icon16.png",
