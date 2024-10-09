@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import './MusicPlayer.css';
-import { Arrow, ArrowLeft, PauseCircle, PlayCircle, Bars, LikeO, Like } from '@react-vant/icons';
+import { Arrow, ArrowLeft, PauseCircle, PlayCircle, Bars, LikeO, Like, Music } from '@react-vant/icons';
 import { Slider } from 'react-vant';
 import { instance } from '../utils/api';
 import { Toast } from 'react-vant/lib';
-
 // 辅助函数：将秒数转换为 "分:秒" 格式
 const formatTime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
@@ -32,7 +31,7 @@ const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError, setIsShowPl
         likeState: status
       });
       Toast.success(response.data);
-      
+
       // 更新播放列表中的歌曲状态
       updateSongInPlaylist(updatedSong);
     } catch (error) {

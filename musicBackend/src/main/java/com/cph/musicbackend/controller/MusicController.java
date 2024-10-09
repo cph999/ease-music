@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -101,6 +102,7 @@ public class MusicController {
     }
 
     @PostMapping("/api/uploadAudio")
+    @RecognizeAddress
     public Object recongnizeMusic(@RequestParam("audio") MultipartFile file) {
         if (file.isEmpty()) {
             return "{\"error\": \"请选择一个文件上传\"}";
@@ -116,7 +118,9 @@ public class MusicController {
             // 保存文件
             File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
             file.transferTo(destFile);
-            return acrCloudUtil.recongizeByFile(dir.getAbsolutePath() + File.separator + fileName);
+            Map<String, String> resultMap = acrCloudUtil.recongizeByFile(dir.getAbsolutePath() + File.separator + fileName);
+            musicMapper.insert(new Music().setArtist(resultMap.get("artist")).setTitle(resultMap.get("title")));
+            return resultMap;
 //            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
 
         } catch (IOException e) {
