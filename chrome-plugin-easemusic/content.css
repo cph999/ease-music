@@ -3,13 +3,13 @@
   position: fixed;
   top: 10%;
   right: 0;
-  width: 25%;
-  height: 90%;
+  width: 15%;
+  height: 50%;
   background: white;
   border: 1px solid #ccc;
   z-index: 9999;
   display: none;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   pointer-events: auto;
 }
@@ -42,7 +42,8 @@
   cursor: pointer;
   font-size: 20px;
   transition: background-color 0.3s;
-  flex: 1; /* 让按钮平均分配空间 */
+  flex: 1;
+  /* 让按钮平均分配空间 */
 }
 
 #ease-music-player button:hover {
@@ -57,7 +58,8 @@
 
 /* 如果需要，可以为关闭按钮添加特定样式 */
 #ease-music-close {
-  background-color: #f44336; /* 红色背景 */
+  background-color: #f44336;
+  /* 红色背景 */
 }
 
 #ease-music-close:hover {

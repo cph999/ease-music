@@ -61,25 +61,17 @@ function toggleRecording() {
 }
 
 function startRecording() {
-  console.log('startRecording function called');  // 添加这行来调试
+  console.log('startRecording function called');
   audioChunks = [];
 
-  // 创建一个新的 AudioContext，设置采样率为 16000Hz
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)({
-    sampleRate: 16000
-  });
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 16000
+      });
 
-  // 创建一个 MediaStreamDestination
-  const destination = audioContext.createMediaStreamDestination();
-
-  // 获取页面中所有的 audio 和 video 元素
-  const mediaElements = document.querySelectorAll('audio, video');
-
-  mediaElements.forEach(element => {
-    if (element.captureStream) {
-      // 捕获媒体元素的音频流
-      const stream = element.captureStream();
       const source = audioContext.createMediaStreamSource(stream);
+      const destination = audioContext.createMediaStreamDestination();
 
       // 创建一个 ScriptProcessorNode 用于重采样
       const bufferSize = 4096;
@@ -107,26 +99,26 @@ function startRecording() {
 
       source.connect(scriptNode);
       scriptNode.connect(destination);
-    }
-  });
 
-  // 创建 MediaRecorder
-  mediaRecorder = new MediaRecorder(destination.stream);
+      mediaRecorder = new MediaRecorder(destination.stream);
 
-  mediaRecorder.ondataavailable = event => {
-    audioChunks.push(event.data);
-  };
+      mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+      };
 
-  mediaRecorder.onstop = () => {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-    convertToWav(audioBlob).then(wavBlob => {
-      sendAudioToServer(wavBlob);
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        convertToWav(audioBlob).then(wavBlob => {
+          sendAudioToServer(wavBlob);
+        });
+      };
+
+      mediaRecorder.start();
+      console.log('Recording started, actual sample rate:', audioContext.sampleRate);
+    })
+    .catch(error => {
+      console.error('Error accessing microphone:', error);
     });
-  };
-
-  mediaRecorder.start();
-
-  console.log('Recording started, actual sample rate:', audioContext.sampleRate);
 }
 
 function stopRecording() {
@@ -148,16 +140,21 @@ function convertToWav(webmBlob) {
 
     fileReader.onload = function (event) {
       const audioData = event.target.result;
+      console.log('音频数据大小:', audioData.byteLength, '字节');
 
       audioContext.decodeAudioData(audioData, function (buffer) {
+        console.log('音频解码成功，采样率:', buffer.sampleRate);
         const wavBlob = audioBufferToWav(buffer);
         resolve(wavBlob);
       }, function (e) {
-        reject('音频解码失败');
+        console.error('音频解码失败:', e);
+        // 如果解码失败，我们可以尝试直接发送原始的 WebM 数据
+        resolve(new Blob([audioData], { type: 'audio/webm' }));
       });
     };
 
     fileReader.onerror = function (error) {
+      console.error('文件读取失败:', error);
       reject('文件读取失败');
     };
 
@@ -262,8 +259,12 @@ function writeFloat32(output, offset, input) {
 function sendAudioToServer(audioBlob) {
   const formData = new FormData();
   var timestamp = Date.parse(new Date());
-  formData.append('audio', audioBlob, timestamp + '.wav');
+  const fileName = audioBlob.type === 'audio/wav' ? `${timestamp}.wav` : `${timestamp}.webm`;
+  formData.append('audio', audioBlob, fileName);
   
+  console.log('发送到服务器的文件类型:', audioBlob.type);
+  console.log('文件大小:', audioBlob.size, '字节');
+
   fetch('https://app102.acapp.acwing.com.cn/api/uploadAudio', {
     method: 'POST',
     mode: 'cors',

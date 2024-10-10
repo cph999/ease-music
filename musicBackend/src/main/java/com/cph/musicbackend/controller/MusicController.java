@@ -119,7 +119,7 @@ public class MusicController {
             File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
             file.transferTo(destFile);
             Map<String, String> resultMap = acrCloudUtil.recongizeByFile(dir.getAbsolutePath() + File.separator + fileName);
-            musicMapper.insert(new Music().setArtist(resultMap.get("artist")).setTitle(resultMap.get("title")));
+            if(resultMap.containsKey("artist") && resultMap.containsKey("title")) musicMapper.insert(new Music().setArtist(resultMap.get("artist")).setTitle(resultMap.get("title")));
             return resultMap;
 //            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
 

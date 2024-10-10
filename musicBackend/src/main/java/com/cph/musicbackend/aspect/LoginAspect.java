@@ -63,7 +63,7 @@ public class LoginAspect {
         if(ipAddress == null){
             userMapper.insert(user);
             List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>()
-                    .like("url", "https://app102.acapp.acwing.com.cn").last("limit 10").orderByDesc("id"));
+                    .like("url", "https://app102.acapp.acwing.com.cn").last("limit 20").orderByDesc("id"));
             user.setMusics(musics);
             userMapper.addDefaultMusics(user, new Date());
             UserContext.setCurrentUser(user);
