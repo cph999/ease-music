@@ -2,7 +2,9 @@ package com.cph.musicbackend.scheduler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cph.musicbackend.entity.Music;
+import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
+import com.cph.musicbackend.mapper.UserMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -28,10 +30,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,6 +39,9 @@ import java.util.stream.Collectors;
 public class HLSpider {
     @Autowired
     MusicMapper musicMapper;
+
+    @Autowired
+    UserMapper userMapper;
     private final String url = "https://www.qtings.com/search/filter/tracks/";
 
     @Value("${file.upload.url}")
@@ -53,10 +55,9 @@ public class HLSpider {
         // SQL 查询条件，获取 last_update_time 为 NULL 或 last_update_time 超过2小时的记录
         QueryWrapper<Music> queryWrapper = new QueryWrapper<>();
         queryWrapper.isNull("is_save")
-                .or().eq("is_save", 0).last("limit 6");
+                .or().eq("is_save", 0).last("limit 10");
 
         List<Music> musics = musicMapper.selectList(queryWrapper);
-        musics = musics.stream().filter(m -> !judgeContainsStr(m.getTitle())).collect(Collectors.toList());
         for (Music music : musics) {
             WebDriver driver = null;
             try {
@@ -73,10 +74,10 @@ public class HLSpider {
                 options.setCapability("goog:loggingPrefs", loggingPrefs); // 启用性能日志
                 driver = new ChromeDriver(options);
                 driver.get(url + music.getTitle());
-                Thread.sleep(2000);
+                Thread.sleep(5000);
                 WebElement playDiv = driver.findElements(By.className("song-play-btn")).get(0);
                 playDiv.click();
-                Thread.sleep(10000);
+                Thread.sleep(20000);
                 List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[4]/div[1]/div/div/div[1]/div[3]/div[1]/a/img"));
                 if(!CollectionUtils.isEmpty(elements)) {
                     WebElement element = elements.get(0);
@@ -104,7 +105,10 @@ public class HLSpider {
                         String filePath = path + fileName; // 请根据实际情况修改保存路径
                         downloadFile(mp3Url, filePath);
                         music.setIsSave(1);
-
+                        //对于触发听歌识趣的人添加这首音乐
+                        User user = new User().setId(music.getTriggerId());
+                        user.setMusics(Arrays.asList(music));
+                        if(music.getTriggerId() != null) userMapper.addDefaultMusics(user,new Date());
                         music.setLastUpdateTime(new Date());
                         musicMapper.updateById(music);
                         break;

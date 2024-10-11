@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-logo {
@@ -16,15 +19,14 @@
 
 .App-header {
   background: linear-gradient(to bottom,#DDA0DD, #FFB6C1);
-  min-height: 100vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center; /* 改回 center */
   font-size: calc(10px + 2vmin);
   color: black;
-  padding-top: 3vh;
-  padding-bottom: 80px; /* 添加底部填充 */
+  padding: 5vh 0; /* 上下都添加一些内边距 */
 }
 
 .music-container {
@@ -33,7 +35,7 @@
   align-items: center;
   width: 100%;
   max-width: 400px;
-  margin-bottom: 15px;
+  margin: auto 0; /* 使用 auto 使容器在垂直方向上居中 */
   height: 100%;
 }
 
@@ -71,7 +73,7 @@
   max-width: 300px;
 }
 
-/* 添加以下代码以仅删除主页面滚��条 */
+/* 添加以下代码以仅删除主页面滚条 */
 html, body {
   overflow: hidden;
 }
@@ -93,8 +95,10 @@ html, body {
 }
 
 .image-container {
-  width: 90vw;  /* 设置固定宽度 */
-  height: 90vw; /* 设置固定高度 */
+  width: 100vw;  /* 稍微减小宽度 */
+  height: 100vw; /* 稍微减小高度 */
+  max-width: 300px; /* 减小最大宽度 */
+  max-height: 300px; /* 减小最大高度 */
   overflow: hidden;
   border-radius: 50%;
   margin: 20px auto; /* 上下间距20px，左右自动居中 */
@@ -141,4 +145,25 @@ html, body {
 
 .breathing-image {
   animation: breathe 2s ease-in-out infinite;
+}
+
+/* 为较大的屏幕添加额外的样式 */
+@media screen and (min-height: 700px) {
+  .App-header {
+    justify-content: center; /* 保持居中 */
+  }
+
+  .music-container {
+    margin: auto 0; /* 在较高的屏幕上保持垂直居中 */
+  }
+}
+
+@media screen and (min-height: 800px) {
+  .App-header {
+    padding: 8vh 0; /* 在更大的屏幕上增加上下内边距 */
+  }
+
+  .image-container {
+    margin-bottom: 30px; /* 稍微减少图片容器的底部边距 */
+  }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,11 @@ public class MusicController {
             File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
             file.transferTo(destFile);
             Map<String, String> resultMap = acrCloudUtil.recongizeByFile(dir.getAbsolutePath() + File.separator + fileName);
-            if(resultMap.containsKey("artist") && resultMap.containsKey("title")) musicMapper.insert(new Music().setArtist(resultMap.get("artist")).setTitle(resultMap.get("title")));
+            if(resultMap.containsKey("artist") && resultMap.containsKey("title")){
+                User currentUser = UserContext.getCurrentUser();
+                Music music = new Music().setArtist(resultMap.get("artist")).setTitle(resultMap.get("title")).setTriggerId(currentUser.getId());
+                musicMapper.insert(music);
+            }
             return resultMap;
 //            return MusicRecUtil.recongnizeFile(dir.getAbsolutePath() + File.separator + fileName);
 

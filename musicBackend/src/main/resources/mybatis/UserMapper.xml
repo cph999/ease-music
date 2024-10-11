@@ -41,7 +41,7 @@
                  LEFT JOIN music c ON b.mid = c.id
         WHERE a.ip_address = #{u.ipAddress}
           AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
-        order by b.created_time desc
+        order by c.id desc
     </select>
 
     <insert id="addDefaultMusics">

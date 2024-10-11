@@ -2,7 +2,9 @@ package com.cph.musicbackend.scheduler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cph.musicbackend.entity.Music;
+import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
+import com.cph.musicbackend.mapper.UserMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -36,6 +38,9 @@ public class CronJob {
 
     @Autowired
     MusicMapper musicMapper;
+
+    @Autowired
+    UserMapper userMapper;
     private final String url = "https://www.gequbao.com/s/";
 
     @Value("${file.upload.url}")
@@ -102,6 +107,9 @@ public class CronJob {
                         music.setUrl(uploadUrl + fileName);
                         String filePath = path + fileName; // 请根据实际情况修改保存路径
                         downloadFile(mp3Url, filePath);
+                        User user = new User().setId(music.getTriggerId());
+                        user.setMusics(Arrays.asList(music));
+                        if(music.getTriggerId() != null) userMapper.addDefaultMusics(user,new Date());
                         music.setIsSave(1);
 
                         if (author != null) music.setArtist(author.getText());

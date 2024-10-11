@@ -24,6 +24,10 @@ public class Music {
     //是否还保存过，报错过1，没保存过0
     private Integer isSave;
 
+    //触发人id，可以是空
+    @TableField(value = "trigger_id")
+    private Integer triggerId;
+
     // 点赞状态 1：喜欢，0：不喜欢
     @TableField(exist = false)
     private Integer likeState;
