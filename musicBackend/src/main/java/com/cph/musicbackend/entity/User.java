@@ -16,6 +16,15 @@ public class User {
     private String mac;
     private String ipAddress;
 
+    private String password;
+    private String phone;
+    private String email;
+    private String nickname;
+    private String cover;
+
+    private String token;
+
     @TableField(exist = false)
     private List<Music> musics;
+
 }

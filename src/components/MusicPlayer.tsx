@@ -12,7 +12,7 @@ const formatTime = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError, setIsShowPlayList, setCurrentSong, updateSongInPlaylist }) => {
+const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError, setIsShowPlayList, setCurrentSong, updateSongInPlaylist, likeList, setLikeList }) => {
   const [playingMusic, setPlayingMusic] = useState(currentSong);
   const [isPlaying, setIsPlaying] = useState(true);
   const playerRef = useRef<ReactAudioPlayer>(null);
@@ -23,8 +23,11 @@ const MusicPlayer = ({ currentSong, onPrevSong, onNextSong, onError, setIsShowPl
   const handleLike = async (status) => {
     const updatedSong = { ...currentSong, likeState: status };
     setCurrentSong(updatedSong);
-    console.log('准备发送的数据:', { song: updatedSong });
-
+    if (status === 1) likeList.push(updatedSong);
+    else if (status === 0) {
+      const index = likeList.findIndex(song => song.id === updatedSong.id);
+      likeList.splice(index, 1);
+    }
     try {
       const response = await instance.post('/like', {
         id: updatedSong.id,

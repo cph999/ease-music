@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.cph.musicbackend.aspect.RecognizeAddress;
 import com.cph.musicbackend.aspect.UserContext;
+import com.cph.musicbackend.common.CommonResult;
 import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
@@ -44,10 +45,6 @@ public class MusicController {
     @RecognizeAddress
     public List<Music> getMusciList() {
         User currentUser = UserContext.getCurrentUser();
-        if (!CollectionUtils.isEmpty(currentUser.getMusics())) {
-            return currentUser.getMusics();
-        }
-        //个性化音乐列表
         User personalMuicList = userMapper.getPersonalMuicList(currentUser);
         return personalMuicList.getMusics();
     }
@@ -91,6 +88,18 @@ public class MusicController {
             return e.getMessage();
         }
         return "添加成功";
+    }
+
+    /**
+     * 我的喜欢列表
+     * @return
+     */
+    @PostMapping("/api/likeList")
+    @RecognizeAddress
+    public CommonResult likeList() {
+        User currentUser = UserContext.getCurrentUser();
+        User personalMuicList = userMapper.getLikeMuicList(currentUser);
+        return new CommonResult(200,"查新成功",null,personalMuicList.getMusics());
     }
 
     @PostMapping("/api/like")

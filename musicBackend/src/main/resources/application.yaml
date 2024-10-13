@@ -47,3 +47,6 @@ logging:
   level:
     com.cph.musicbackend.mapper: TRACE
     org.mybatis: DEBUG
+
+md5:
+  salt: "ccpphh130."

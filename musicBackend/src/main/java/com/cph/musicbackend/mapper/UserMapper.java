@@ -19,6 +19,13 @@ public interface UserMapper extends BaseMapper<User> {
     public User getPersonalMuicList(@Param("u") User user);
 
     /**
+     * 查询喜欢的音乐
+     * @param user
+     * @return
+     */
+    public User getLikeMuicList(@Param("u") User user);
+
+    /**
      * 添加默认歌曲
      *
      * @return

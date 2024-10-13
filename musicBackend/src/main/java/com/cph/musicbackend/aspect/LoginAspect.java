@@ -2,6 +2,7 @@ package com.cph.musicbackend.aspect;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.entity.User;
 import com.cph.musicbackend.mapper.MusicMapper;
@@ -40,7 +41,6 @@ public class LoginAspect {
     @Around(value = "pointCutMethodController()")
     public Object doAroundService(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        User user = new User();
         if (requestAttributes != null) {
             HttpServletRequest request = requestAttributes.getRequest();
 
@@ -56,21 +56,16 @@ public class LoginAspect {
                 ipAddress = request.getRemoteAddr();
             }
             ipAddress = ipAddress.split(",")[0]; // 如果有多个代理IP，取第一个
-            user.setIpAddress(ipAddress);
-        }
-        // 没有用户，创建用户，添加默认歌曲
-        User ipAddress = userMapper.selectOne(new QueryWrapper<User>().eq("ip_address", user.getIpAddress()));
-        if(ipAddress == null){
-            userMapper.insert(user);
-            List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>()
-                    .like("url", "https://app102.acapp.acwing.com.cn").last("limit 20").orderByDesc("id"));
-            user.setMusics(musics);
-            userMapper.addDefaultMusics(user, new Date());
-            UserContext.setCurrentUser(user);
-        }else{
-            UserContext.setCurrentUser(ipAddress);
-        }
 
+            String token = request.getHeader("authorization");
+            if(StringUtils.isBlank(token)){
+                throw new Exception("请先登录");
+            }
+            User user = userMapper.selectOne(new QueryWrapper<User>().eq("token", token));
+            if(user == null )throw new Exception("请先登录");
+            user.setIpAddress(ipAddress);
+            UserContext.setCurrentUser(user);
+        }
         // 执行方法
         Object result = joinPoint.proceed();
         return result;

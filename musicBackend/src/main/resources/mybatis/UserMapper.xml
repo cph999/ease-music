@@ -39,8 +39,31 @@
         FROM user a
                  LEFT JOIN user_music b ON a.id = b.uid
                  LEFT JOIN music c ON b.mid = c.id
-        WHERE a.ip_address = #{u.ipAddress}
+        WHERE a.username = #{u.username}
           AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
+        order by c.id desc
+    </select>
+
+    <select id="getLikeMuicList" resultMap="BaseResultMap">
+        SELECT a.id AS user_id,
+               a.username,
+               a.mac,
+               a.ip_address,
+               b.like_state,
+               c.id AS music_id,
+               c.title,
+               c.artist,
+               c.duration,
+               c.url,
+               c.last_update_time,
+               c.cover,
+               c.is_save
+        FROM user a
+                 LEFT JOIN user_music b ON a.id = b.uid
+                 LEFT JOIN music c ON b.mid = c.id
+        WHERE a.username = #{u.username}
+          AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
+        AND b.like_state = 1
         order by c.id desc
     </select>
 

@@ -1,0 +1,15 @@
+.self-container {
+    display: center;
+}
+
+.self-container-header {
+    width: 50%;
+    position: absolute;
+    top: 5.8%;
+    left: 50%
+}
+
+.like-list {
+    margin-top: 3px;
+    border-radius: 5%;
+}

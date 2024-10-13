@@ -18,15 +18,17 @@
 }
 
 .App-header {
-  background: linear-gradient(to bottom,#DDA0DD, #FFB6C1);
+  background: linear-gradient(to bottom, #DDA0DD, #FFB6C1);
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* 改回 center */
+  justify-content: center;
+  /* 改回 center */
   font-size: calc(10px + 2vmin);
   color: black;
-  padding: 5vh 0; /* 上下都添加一些内边距 */
+  padding: 5vh 0;
+  /* 上下都添加一些内边距 */
 }
 
 .music-container {
@@ -35,7 +37,8 @@
   align-items: center;
   width: 100%;
   max-width: 400px;
-  margin: auto 0; /* 使用 auto 使容器在垂直方向上居中 */
+  margin: auto 0;
+  /* 使用 auto 使容器在垂直方向上居中 */
   height: 100%;
 }
 
@@ -47,6 +50,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -74,7 +78,8 @@
 }
 
 /* 添加以下代码以仅删除主页面滚条 */
-html, body {
+html,
+body {
   overflow: hidden;
 }
 
@@ -85,23 +90,30 @@ body::-webkit-scrollbar {
 }
 
 /* 对于 Firefox */
-html, body {
+html,
+body {
   scrollbar-width: none;
 }
 
 /* 对于 IE 和 Edge */
-html, body {
+html,
+body {
   -ms-overflow-style: none;
 }
 
 .image-container {
-  width: 100vw;  /* 稍微减小宽度 */
-  height: 100vw; /* 稍微减小高度 */
-  max-width: 300px; /* 减小最大宽度 */
-  max-height: 300px; /* 减小最大高度 */
+  width: 100vw;
+  /* 稍微减小宽度 */
+  height: 100vw;
+  /* 稍微减小高度 */
+  max-width: 300px;
+  /* 减小最大宽度 */
+  max-height: 300px;
+  /* 减小最大高度 */
   overflow: hidden;
   border-radius: 50%;
-  margin: 20px auto; /* 上下间距20px，左右自动居中 */
+  margin: 20px auto;
+  /* 上下间距20px，左右自动居中 */
 }
 
 .App-logo {
@@ -133,10 +145,12 @@ html, body {
     transform: scale(1);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 0.8;
@@ -150,20 +164,39 @@ html, body {
 /* 为较大的屏幕添加额外的样式 */
 @media screen and (min-height: 700px) {
   .App-header {
-    justify-content: center; /* 保持居中 */
+    justify-content: center;
+    /* 保持居中 */
   }
 
   .music-container {
-    margin: auto 0; /* 在较高的屏幕上保持垂直居中 */
+    margin: auto 0;
+    /* 在较高的屏幕上保持垂直居中 */
   }
 }
 
 @media screen and (min-height: 800px) {
   .App-header {
-    padding: 8vh 0; /* 在更大的屏幕上增加上下内边距 */
+    padding: 8vh 0;
+    /* 在更大的屏幕上增加上下内边距 */
   }
 
   .image-container {
-    margin-bottom: 30px; /* 稍微减少图片容器的底部边距 */
+    margin-bottom: 30px;
+    /* 稍微减少图片容器的底部边距 */
   }
+}
+
+.loginBox {
+  width: 80%;
+  position: absolute;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loginHeader{
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  width: 100%;
 }
