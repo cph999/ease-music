@@ -3,9 +3,6 @@ import { Image, Typography } from 'react-vant';
 import './ChatItem.css';
 
 function ChatItem({ message, userinfo }) {
-    useEffect(() => {
-        console.log("message", message, "userinfo", userinfo);
-    }, [message, userinfo]);
 
     const isSentByUser = userinfo.id === message.fromId;
 

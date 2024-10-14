@@ -47,7 +47,7 @@ public class MessageController {
         collect.values().forEach(temp -> {
             if (!CollectionUtils.isEmpty(temp)) {
                 lists.add(temp.stream()
-                        .sorted((a, b) -> b.getCreatedTime().compareTo(a.getCreatedTime()))  // 按照创建时间排序
+                        .sorted(Comparator.comparing(Message::getCreatedTime))  // 按照创建时间排序
                         .map(m -> {
                             String formattedDate = sdf.format(m.getCreatedTime());
                             m.setShowTime(formattedDate);
