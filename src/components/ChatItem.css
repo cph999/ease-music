@@ -1,0 +1,39 @@
+.message-item {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.message-item.sent {
+    justify-content: flex-end; /* 发送消息的用户居右 */
+    /* flex-direction: row-reverse; 头像在右侧，消息气泡在左侧 */
+}
+
+.message-item.received {
+    justify-content: flex-start; /* 接收消息的用户居左 */
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.message-bubble {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.message-item.sent .message-bubble {
+    margin-right: 10px; /* 让发送方的消息气泡右边有一些间距 */
+    margin-left: auto; /* 使消息内容靠右 */
+}
+
+.message-item.received .message-bubble {
+    margin-left: 10px; /* 让接收方的消息气泡左边有一些间距 */
+    margin-right: auto; /* 使消息内容靠左 */
+}

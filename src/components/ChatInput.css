@@ -1,0 +1,28 @@
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f0f0f0; /* 设置背景色 */
+    transform: translateY(-60%); /* 向上偏移 10% */
+}
+
+.chat-input {
+    flex: 1;
+    margin-right: 10px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    padding: 10px 15px; /* 增加内边距 */
+    height: 50px; /* 增加高度 */
+    font-size: 16px; /* 增加字体大小 */
+    box-sizing: border-box;
+}
+
+.send-button {
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 20px;
+    height: 50px; /* 增加按钮高度 */
+    padding: 0 20px;
+    font-size: 16px; /* 增加字体大小 */
+}
