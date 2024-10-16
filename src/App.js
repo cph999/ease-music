@@ -3,7 +3,7 @@
 import './App.css';
 import 'react-vant/es/styles';
 import Home from './components/Home.tsx';
-import SearchPage from './components/SearchPage.tsx';
+import Discovery from './components/Discovery.tsx';
 import Chat from './components/Chat.tsx';
 import Profile from './components/Profile.tsx';
 import React, { useState, useEffect } from 'react';
@@ -80,7 +80,7 @@ function App() {
       case 'home':
         return <Home userinfo={userinfo} setUserinfo={setUserinfo} />;
       case 'search':
-        return <SearchPage />;
+        return <Discovery />;
       case 'chat':
         return <Chat userinfo={userinfo} />;
       case 'profile':
@@ -175,7 +175,7 @@ function App() {
           首页
         </Tabbar.Item>
         <Tabbar.Item icon={<Search />} name="search" badge={{ dot: true }}>
-          搜索
+          发现
         </Tabbar.Item>
         <Tabbar.Item icon={<FriendsO />} name="chat" badge={{ content: 5 }}>
           聊天

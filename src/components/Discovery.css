@@ -1,0 +1,93 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#root {
+    height: 100%;
+}
+
+.discovery-container {
+    height: 100%;
+    padding: 20px 10px;
+    background: linear-gradient(to bottom, #DDA0DD, #FFB6C1);
+    box-sizing: border-box;
+    position: relative;
+
+}
+
+
+.post-content {     
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.single-image {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.image-grid {
+    display: flex;
+    gap: 5px;
+}
+
+.grid-image {
+    border-radius: 8px;
+}
+
+.grid-image-2 {
+    width: 49%;
+    height: 200px;
+}
+
+.grid-image-3,
+.grid-image-4 {
+    width: 32%;
+    height: 150px;
+}
+
+.grid-image-5,
+.grid-image-6 {
+    width: 49%;
+    height: 150px;
+}
+
+.grid-image-7,
+.grid-image-8,
+.grid-image-9 {
+    width: 32%;
+    height: 100px;
+}
+
+.right-operate-container {
+    position: absolute;
+    bottom: 15%;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 20%;
+    z-index: 999;
+}
+
+.right-operate-container img {
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.main-content-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 35%;
+}

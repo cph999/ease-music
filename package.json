@@ -15,6 +15,7 @@
     "react-audio-player": "^0.17.0",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
+    "react-swipeable": "^7.0.1",
     "react-vant": "^3.3.5",
     "web-vitals": "^2.1.4"
   },

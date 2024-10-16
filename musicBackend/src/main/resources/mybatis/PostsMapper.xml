@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cph.musicbackend.mapper.PostsMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.cph.musicbackend.entity.Posts">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="created_time" property="createdTime" jdbcType="DATE"/>
+        <result column="media" property="media" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="user_icon" property="userIcon" jdbcType="VARCHAR"/>
+        <result column="user_nickname" property="userNickname" jdbcType="VARCHAR"/>
+        <result column="is_like" property="isLike" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <select id="getUserPosts" resultMap="BaseResultMap">
+        select a.id            id,
+               a.user_id       user_id,
+               a.created_time  created_time,
+               a.media         media,
+               a.content       content,
+               a.user_icon     user_icon,
+               a.user_nickname user_nickname,
+               b.is_like       is_like
+        from posts a
+                 left join user_posts b
+                           on a.id = b.post_id and b.user_id = #{u.id}
+    </select>
+
+
+    <update id="like">
+        update user_posts
+        set is_like = #{p.isLike}
+        where user_id = #{u.id}
+          and post_id = #{p.id}
+    </update>
+</mapper>

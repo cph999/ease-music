@@ -12,7 +12,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new ChatWebSocketHandler(), "/api/chat")
+        registry.addHandler(new ChatWebSocketHandler(), "/chat")
                 .setAllowedOrigins("*"); // 允许跨域请求，可以根据需要配置
+
     }
 }

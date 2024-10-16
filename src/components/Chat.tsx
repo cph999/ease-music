@@ -22,7 +22,11 @@ function Chat({ userinfo }) {
     useEffect(() => {
         if (!userinfo || !userinfo.id) return;
 
-        const ws = new WebSocket(`ws://localhost:8809/api/chat?userId=${userinfo.id}`);
+        const ws = new WebSocket(`wss://app102.acapp.acwing.com.cn/chat?userId=${userinfo.id}`);
+        // wss://app102.acapp.acwing.com.cn/chat?userId=49
+        // const ws = new WebSocket(`ws://39.100.90.48:8809/chat?userId=${userinfo.id}`);
+        // const ws = new WebSocket(`ws://localhost:8809/chat?userId=${userinfo.id}`);
+
 
         ws.onopen = () => {
             console.log('WebSocket connected');
@@ -116,16 +120,18 @@ function Chat({ userinfo }) {
             {!chatState && (
                 <div className='chat-box'>
                     <div className='chat-header'>
-                        <Flex justify='between' align='center'>
-                            <Flex.Item span={12}>
-                                <Badge dot offset={['50%', '100%']} color="#87d068">
-                                    <Image round fit='cover' width='50%' height='50%' src={(userinfo && userinfo.cover) || defaultIcon} />
+                        <Flex justify='start' align='center'>
+                            <Flex.Item span={4} className="badge">
+                                <Badge dot offset={['0%', '100%']} color="#87d068">
+                                    <Image round fit='cover' width='100%' height='100%' src={(userinfo && userinfo.cover) || defaultIcon} />
                                 </Badge>
-                                <span style={{ position: "absolute", top: '85%', left: '38%', fontSize: '15px' }}>{userinfo.nickname}</span>
                             </Flex.Item>
-                            <Flex.Item span={12}></Flex.Item>
+                            <Flex.Item span={8} className="nickname-container">
+                                <span className="nickname">{userinfo.nickname}</span>
+                            </Flex.Item>
                         </Flex>
                     </div>
+
                     <div className='list-container'>
                         <PullRefresh onRefresh={onRefresh}>
                             <List finished={finish} onLoad={onLoadRefresh}>
@@ -134,8 +140,9 @@ function Chat({ userinfo }) {
                                         key={message[message.length - 1].id}
                                         title={userinfo.id === message[message.length - 1].fromId ? message[message.length - 1].toNickname : message[message.length - 1].fromNickname}
                                         label={message[message.length - 1].message}
-                                        icon={<img src={userinfo.id === message[message.length - 1].fromId ? message[message.length - 1].toIcon : message[message.length - 1].fromIcon} alt="from" style={{ width: 30, height: 30, borderRadius: '50%' }} />}
+                                        icon={<img src={userinfo.id === message[message.length - 1].fromId ? message[message.length - 1].toIcon : message[message.length - 1].fromIcon} alt="from" className="cell-icon" />}
                                         value={message[message.length - 1].showTime}
+                                        className={userinfo.id === message[message.length - 1].fromId ? "cell-sent" : "cell-received"}
                                         onClick={() => handleClickMessage(message)}
                                     />
                                 ))}

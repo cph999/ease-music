@@ -1,18 +1,82 @@
-.chat-box {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, #DDA0DD, #FFB6C1);
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #eaeaea;
 }
 
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+.chat-input {
+    flex: 1;
+    margin-right: 10px;
+    border-radius: 20px;
+    border: 1px solid #eaeaea;
+    padding: 8px 12px;
+    font-size: 14px;
 }
-.chat-header{
-    padding: 2px;
-    /* margin-top: 2%; */
+
+.send-button {
+    margin-left: 10px;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    border-radius: 20px;
 }
-.list-container {
+
+.emoji-picker-wrapper {
+    position: absolute;
+    bottom: 60px;
+    /* 确保不会挡住输入框 */
+    right: 10px;
+    z-index: 10;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+.emoji-icon {
+    margin-right: 10px;
+    cursor: pointer;
+    color: #888;
+}
+
+.emoji-icon:hover {
+    color: #007bff;
+}
+
+.chat-header {
+    background-color: #f0f0f0;
+    /* 顶部背景色 */
+    padding: 15px;
+    /* 增加内边距，调整顶部区域的高度 */
+    min-height: 60px;
+    /* 设置最小高度 */
+    border-bottom: 1px solid #eaeaea;
+    /* 添加下边框 */
+    display: flex;
+    /* 使用 flex 布局 */
+    align-items: center;
+    /* 垂直居中对齐 */
+}
+
+.chat-header .badge {
+    margin-right: 10px;
+    /* Badge 和 nickname 之间的间距 */
+}
+
+.chat-header .nickname {
+    font-size: 18px;
+    /* 增加昵称字体大小 */
+    color: #333;
+    /* 字体颜色 */
+    font-weight: bold;
+    /* 加粗字体 */
+}
+
+.chat-header .nickname-container {
+    display: flex;
+    /* 使用 flex 布局 */
+    flex-direction: column;
+    /* 纵向排列 */
 }
