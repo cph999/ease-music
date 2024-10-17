@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { instance } from '../utils/api';
 import HomeHeader from './HomeHeader.tsx';
 import LocalStorageUtil from '../utils/LocalStorageUtil';
-import { Image, Toast, Form, Tabbar } from 'react-vant';
+import { Image, Toast, Tabbar } from 'react-vant';
 import { FriendsO, HomeO, Search, SettingO } from '@react-vant/icons'
 
 function Home({ userinfo, setUserinfo }) {
@@ -14,6 +14,7 @@ function Home({ userinfo, setUserinfo }) {
     const [playlist, setPlaylist] = useState([]);
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    const [loginState, setLoginState] = useState(false);
     const [isShowPlayList, setIsShowPlayList] = useState(false);
     const playlistRef = useRef(null);
     const [list, setList] = useState([])
@@ -34,8 +35,10 @@ function Home({ userinfo, setUserinfo }) {
 
     useEffect(() => {
         if (LocalStorageUtil.getItem('userinfo') === null || JSON.stringify(LocalStorageUtil.getItem('userinfo')) === '{}') {
-            Toast.fail('请先登录');
+            // Toast.fail('请先登录');
+            setLoginState(false);
         } else {
+            setLoginState(true);
             fetchPlaylist();
         }
     }, [userinfo]);
@@ -96,7 +99,7 @@ function Home({ userinfo, setUserinfo }) {
     return (
         <div className="App">
             <header className="App-header">
-                <HomeHeader setCurrentSong={setCurrentSong} search={search} setSearch={setSearch} userinfo={userinfo} list={list} setList={setList} />
+            {loginState && <HomeHeader setCurrentSong={setCurrentSong} search={search} setSearch={setSearch} userinfo={userinfo} list={list} setList={setList} />}
 
 
                 <div className="music-container">
@@ -137,7 +140,7 @@ function Home({ userinfo, setUserinfo }) {
                             )}
                         </>
                     )}
-
+                    {loginState &&
                     <Tabbar active={activeTab} onChange={setActiveTab}>
                         <Tabbar.Item icon={<HomeO />} name="home">
                             首页
@@ -152,6 +155,7 @@ function Home({ userinfo, setUserinfo }) {
                             我的
                         </Tabbar.Item>
                     </Tabbar>
+                    }
                 </div>
             </header>
         </div>
