@@ -8,7 +8,7 @@ import Chat from './components/Chat.tsx';
 import Profile from './components/Profile.tsx';
 import React, { useState, useEffect } from 'react';
 import { FriendsO, HomeO, Search, SettingO } from '@react-vant/icons'
-import { Card, Button, Overlay, Input, Form, Tabbar, Toast } from 'react-vant';
+import { Card, Button, Overlay, Input, Form, Tabbar, Toast, Tabs  } from 'react-vant';
 import LocalStorageUtil from './utils/LocalStorageUtil.js';
 import { instance } from './utils/api';
 
@@ -16,9 +16,11 @@ import { instance } from './utils/api';
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [loginState, setLoginState] = useState(false); // 定义一个 state 变量存储用户名
-  const [form] = Form.useForm()
+  const [form1] = Form.useForm()
+  const [form2] = Form.useForm()
   const [loginOrRegister, setLoginOrRegister] = useState('login');
   const [userinfo, setUserinfo] = useState({}); // 定义一个 state 变量存储用户名
+  const [activeForm, setActiveForm] = useState('1');
 
   useEffect(() => {
     setUserinfo(LocalStorageUtil.getItem('userinfo')); //异步的
@@ -32,8 +34,8 @@ function App() {
 
 
   const handleLogin = () => {
-    const username = form.getFieldValue("username");
-    const password = form.getFieldValue("password");
+    const username = form1.getFieldValue("username");
+    const password = form1.getFieldValue("password");
     instance.post("/login", {
       username: username,
       password: password
@@ -51,10 +53,10 @@ function App() {
   };
 
   const handleRegister = () => {
-    const username = form.getFieldValue("username");
-    const password = form.getFieldValue("password");
-    const phone = form.getFieldValue("phone");
-    const nickname = form.getFieldValue("nickname");
+    const username = form2.getFieldValue("username");
+    const password = form2.getFieldValue("password");
+    const phone = form2.getFieldValue("phone");
+    const nickname = form2.getFieldValue("nickname");
 
     instance.post("/register", {
       username: username,
@@ -89,12 +91,20 @@ function App() {
         return <Home />;
     }
   };
+
+  useEffect(()=>{
+    if(activeForm==='1'){
+      setLoginOrRegister('login');
+    } else {
+      setLoginOrRegister('register');
+    }
+  },activeForm)
   return (
     <>
       <Overlay visible={!loginState}>
         <div className='loginBox'>
           <Card round>
-            <Card.Header border>
+            {/* <Card.Header border>
               <div className='loginHeader'>
                 <Button round type='default' onClick={() => setLoginOrRegister('login')}>
                   登录
@@ -103,23 +113,17 @@ function App() {
                   注册
                 </Button>
               </div>
-            </Card.Header>
+            </Card.Header> */}
             <Card.Body
-              style={{
-                height: '16vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+
             >
-              <Form
-                form={form}
+              <Tabs active={activeForm} onChange={setActiveForm}> 
+                <Tabs.TabPane name={'1'} key={'1'} title={`登录`}>
+                <Form
+                form={form1}
                 onFinish={onFinish}
-              >      <Form.Item
-                tooltip={{
-                  message:
-                    'A prime is a natural number greater than 1 that has no positive divisors other than 1 and itself.',
-                }}
+              >      
+              <Form.Item
                 rules={[{ required: true, message: '请填写用户名' }]}
                 name='username'
                 label='用户名'
@@ -131,12 +135,31 @@ function App() {
                   name='password'
                   label='密码'
                 >
-                  <Input placeholder='请输入密码' />
+                  <Input  type='password'
+                          placeholder='请输入密码' />
                 </Form.Item>
-
-                {
-                  loginOrRegister === 'register' ?
-                    <>
+              </Form>
+                </Tabs.TabPane>
+                <Tabs.TabPane name={'2'} key={'2'} title={`注册`}>
+                <Form
+                form={form2}
+                onFinish={onFinish}
+              >  
+                    <Form.Item
+                      rules={[{ required: true, message: '请填写用户名' }]}
+                      name='username'
+                      label='用户名'
+                    >
+                        <Input placeholder='请输入用户名' />
+                      </Form.Item>
+                      <Form.Item
+                        rules={[{ required: true, message: '请填写密码' }]}
+                        name='password'
+                        label='密码'
+                      >
+                        <Input  type='password'
+                                placeholder='请输入密码' />
+                      </Form.Item>    
                       <Form.Item
                         rules={[{ required: true, message: '请填写昵称' }]}
                         name='nickname'
@@ -151,10 +174,9 @@ function App() {
                       >
                         <Input placeholder='请输入手机号' />
                       </Form.Item>
-                    </>
-                    : <></>
-                }
               </Form>
+                </Tabs.TabPane>
+            </Tabs>
             </Card.Body>
             <Card.Footer border>
               {loginOrRegister === 'login' ?
