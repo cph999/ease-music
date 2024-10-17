@@ -25,7 +25,7 @@ function App() {
   useEffect(() => {
     setUserinfo(LocalStorageUtil.getItem('userinfo')); //异步的
     if (LocalStorageUtil.getItem('userinfo') === null || JSON.stringify(LocalStorageUtil.getItem('userinfo')) === '{}') {
-      Toast.fail('请先登录');
+      // Toast.fail('请先登录');
       setLoginState(false);
     } else {
       setLoginState(true);
@@ -192,6 +192,7 @@ function App() {
       </Overlay>
       {renderContent()}
 
+      { loginState &&       
       <Tabbar active={activeTab} onChange={setActiveTab}>
         <Tabbar.Item icon={<HomeO />} name="home">
           首页
@@ -205,7 +206,7 @@ function App() {
         <Tabbar.Item icon={<SettingO />} name="profile">
           我的
         </Tabbar.Item>
-      </Tabbar>
+      </Tabbar> } 
     </>
 
   );
