@@ -80,3 +80,9 @@
     flex-direction: column;
     /* 纵向排列 */
 }
+
+/* .user-item {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+} */
