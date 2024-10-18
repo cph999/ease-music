@@ -8,7 +8,7 @@ import Chat from './components/Chat.tsx';
 import Profile from './components/Profile.tsx';
 import React, { useState, useEffect } from 'react';
 import { FriendsO, HomeO, Search, SettingO } from '@react-vant/icons'
-import { Card, Button, Overlay, Input, Form, Tabbar, Toast, Tabs  } from 'react-vant';
+import { Card, Button, Overlay, Input, Form, Tabbar, Toast, Tabs } from 'react-vant';
 import LocalStorageUtil from './utils/LocalStorageUtil.js';
 import { instance } from './utils/api';
 
@@ -86,19 +86,19 @@ function App() {
       case 'chat':
         return <Chat userinfo={userinfo} />;
       case 'profile':
-        return <Profile />;
+        return <Profile userinfo={userinfo} setUserinfox={setUserinfo} />;
       default:
         return <Home />;
     }
   };
 
-  useEffect(()=>{
-    if(activeForm==='1'){
+  useEffect(() => {
+    if (activeForm === '1') {
       setLoginOrRegister('login');
     } else {
       setLoginOrRegister('register');
     }
-  },activeForm)
+  }, activeForm)
   return (
     <>
       <Overlay visible={!loginState}>
@@ -117,66 +117,66 @@ function App() {
             <Card.Body
 
             >
-              <Tabs active={activeForm} onChange={setActiveForm}> 
+              <Tabs active={activeForm} onChange={setActiveForm}>
                 <Tabs.TabPane name={'1'} key={'1'} title={`登录`}>
-                <Form
-                form={form1}
-                onFinish={onFinish}
-              >      
-              <Form.Item
-                rules={[{ required: true, message: '请填写用户名' }]}
-                name='username'
-                label='用户名'
-              >
-                  <Input placeholder='请输入用户名' />
-                </Form.Item>
-                <Form.Item
-                  rules={[{ required: true, message: '请填写密码' }]}
-                  name='password'
-                  label='密码'
-                >
-                  <Input  type='password'
-                          placeholder='请输入密码' />
-                </Form.Item>
-              </Form>
-                </Tabs.TabPane>
-                <Tabs.TabPane name={'2'} key={'2'} title={`注册`}>
-                <Form
-                form={form2}
-                onFinish={onFinish}
-              >  
+                  <Form
+                    form={form1}
+                    onFinish={onFinish}
+                  >
                     <Form.Item
                       rules={[{ required: true, message: '请填写用户名' }]}
                       name='username'
                       label='用户名'
                     >
-                        <Input placeholder='请输入用户名' />
-                      </Form.Item>
-                      <Form.Item
-                        rules={[{ required: true, message: '请填写密码' }]}
-                        name='password'
-                        label='密码'
-                      >
-                        <Input  type='password'
-                                placeholder='请输入密码' />
-                      </Form.Item>    
-                      <Form.Item
-                        rules={[{ required: true, message: '请填写昵称' }]}
-                        name='nickname'
-                        label='昵称'
-                      >
-                        <Input placeholder='请输入昵称' />
-                      </Form.Item>
-
-                      <Form.Item
-                        name='phone'
-                        label='手机号'
-                      >
-                        <Input placeholder='请输入手机号' />
-                      </Form.Item>
-              </Form>
+                      <Input placeholder='请输入用户名' />
+                    </Form.Item>
+                    <Form.Item
+                      rules={[{ required: true, message: '请填写密码' }]}
+                      name='password'
+                      label='密码'
+                    >
+                      <Input type='password'
+                        placeholder='请输入密码' />
+                    </Form.Item>
+                  </Form>
                 </Tabs.TabPane>
-            </Tabs>
+                <Tabs.TabPane name={'2'} key={'2'} title={`注册`}>
+                  <Form
+                    form={form2}
+                    onFinish={onFinish}
+                  >
+                    <Form.Item
+                      rules={[{ required: true, message: '请填写用户名' }]}
+                      name='username'
+                      label='用户名'
+                    >
+                      <Input placeholder='请输入用户名' />
+                    </Form.Item>
+                    <Form.Item
+                      rules={[{ required: true, message: '请填写密码' }]}
+                      name='password'
+                      label='密码'
+                    >
+                      <Input type='password'
+                        placeholder='请输入密码' />
+                    </Form.Item>
+                    <Form.Item
+                      rules={[{ required: true, message: '请填写昵称' }]}
+                      name='nickname'
+                      label='昵称'
+                    >
+                      <Input placeholder='请输入昵称' />
+                    </Form.Item>
+
+                    <Form.Item
+                      name='phone'
+                      label='手机号'
+                    >
+                      <Input placeholder='请输入手机号' />
+                    </Form.Item>
+                  </Form>
+                </Tabs.TabPane>
+              </Tabs>
             </Card.Body>
             <Card.Footer border>
               {loginOrRegister === 'login' ?
@@ -192,21 +192,21 @@ function App() {
       </Overlay>
       {renderContent()}
 
-      { loginState &&       
-      <Tabbar active={activeTab} onChange={setActiveTab}>
-        <Tabbar.Item icon={<HomeO />} name="home">
-          首页
-        </Tabbar.Item>
-        <Tabbar.Item icon={<Search />} name="search" badge={{ dot: true }}>
-          发现
-        </Tabbar.Item>
-        <Tabbar.Item icon={<FriendsO />} name="chat" badge={{ content: 5 }}>
-          聊天
-        </Tabbar.Item>
-        <Tabbar.Item icon={<SettingO />} name="profile">
-          我的
-        </Tabbar.Item>
-      </Tabbar> } 
+      {loginState &&
+        <Tabbar active={activeTab} onChange={setActiveTab}>
+          <Tabbar.Item icon={<HomeO />} name="home">
+            首页
+          </Tabbar.Item>
+          <Tabbar.Item icon={<Search />} name="search" badge={{ dot: true }}>
+            发现
+          </Tabbar.Item>
+          <Tabbar.Item icon={<FriendsO />} name="chat" badge={{ content: 5 }}>
+            聊天
+          </Tabbar.Item>
+          <Tabbar.Item icon={<SettingO />} name="profile">
+            我的
+          </Tabbar.Item>
+        </Tabbar>}
     </>
 
   );

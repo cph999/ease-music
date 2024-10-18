@@ -2,6 +2,7 @@ package com.cph.musicbackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cph.musicbackend.aspect.RecognizeAddress;
+import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.common.CommonResult;
 import com.cph.musicbackend.entity.Message;
 import com.cph.musicbackend.entity.Music;
@@ -16,12 +17,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.server.UID;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class UserController {
@@ -37,6 +41,12 @@ public class UserController {
 
     @Autowired
     MessageMapper messagesMapper;
+
+    @Value("${file.upload.path}")
+    private String path;
+
+    @Value("${file.upload.url}")
+    private String url;
 
     @PostMapping("/api/login")
     public CommonResult login(@RequestBody User loginUser) {
@@ -87,4 +97,62 @@ public class UserController {
         return new CommonResult(200, "查询成功", null);
     }
 
+    @PostMapping("/api/uploadFile")
+    @RecognizeAddress
+    public Object recongnizeMusic(@RequestParam("file") MultipartFile file) throws IOException {
+
+        if (file.isEmpty()) {
+            return "{\"error\": \"请选择一个文件上传\"}";
+        }
+
+        String fileName = file.getOriginalFilename();
+        // 指定文件保存路径
+        String uploadDir = path;
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        // 保存文件
+        File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
+        file.transferTo(destFile);
+        User currentUser = UserContext.getCurrentUser();
+        currentUser.setCover(url + file.getOriginalFilename());
+        userMapper.updateById(currentUser);
+        HashMap<String, String> res = new HashMap<>();
+        res.put("url", url + fileName);
+        return new CommonResult(200, "修改成功", res);
+    }
+
+    @PostMapping("/api/user/update")
+    @RecognizeAddress
+    public Object update(@RequestBody User user) throws IOException {
+        User currentUser = UserContext.getCurrentUser();
+        user.setId(currentUser.getId());
+        userMapper.updateById(user);
+        return new CommonResult(200, "修改成功", null);
+    }
+
+    /**
+     * 当前用户的所有朋友
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/api/friends")
+    @RecognizeAddress
+    public CommonResult friends() throws IOException {
+        User currentUser = UserContext.getCurrentUser();
+        QueryWrapper<Message> wrapper = new QueryWrapper<>();
+        wrapper.eq("from_id", currentUser.getId()).or().eq("to_id", currentUser.getId());
+        List<Message> messages = messagesMapper.selectList(wrapper);
+        List<Integer> ids = messages.stream().map(m -> {
+            if (m.getFromId().equals(currentUser.getId())) return m.getToId();
+            else {
+                return m.getFromId();
+            }
+        }).collect(Collectors.toList());
+        HashSet<Integer> sets = new HashSet<Integer>(ids);
+        sets.remove(currentUser.getId());
+        List<User> users = userMapper.selectList(new QueryWrapper<User>().in("id", sets));
+        return new CommonResult(200, "修改成功", users);
+    }
 }

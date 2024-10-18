@@ -15,6 +15,8 @@ public class User {
     private String username;
     private String mac;
     private String ipAddress;
+    private String age;
+    private String address;
 
     private String password;
     private String phone;
