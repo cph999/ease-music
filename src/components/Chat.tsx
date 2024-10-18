@@ -187,7 +187,9 @@ function Chat({ userinfo }) {
                                 <Popover
                                     actions={disabledActions}
                                     onSelect={select}
-                                    reference={<AddO fontSize="1.5em" />}
+                                    placement="bottom-end"
+                                    reference={<AddO fontSize="1.5em"
+                                    />}
                                 />
                             </Flex.Item>
                         </Flex>

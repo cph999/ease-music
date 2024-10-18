@@ -29,13 +29,18 @@
         from posts a
                  left join user_posts b
                            on a.id = b.post_id and b.user_id = #{u.id}
+        order by a.created_time desc
     </select>
 
 
-    <update id="like">
-        update user_posts
-        set is_like = #{p.isLike}
+    <update id="disLike">
+        delete from  user_posts
         where user_id = #{u.id}
           and post_id = #{p.id}
+    </update>
+
+    <update id="addLike">
+        insert into user_posts(user_id, post_id, is_like)
+        values (#{u.id}, #{p.id}, 1)
     </update>
 </mapper>

@@ -140,22 +140,6 @@ function Home({ userinfo, setUserinfo }) {
                             )}
                         </>
                     )}
-                    {loginState &&
-                    <Tabbar active={activeTab} onChange={setActiveTab}>
-                        <Tabbar.Item icon={<HomeO />} name="home">
-                            首页
-                        </Tabbar.Item>
-                        <Tabbar.Item icon={<Search />} name="search" badge={{ dot: true }}>
-                            搜索
-                        </Tabbar.Item>
-                        <Tabbar.Item icon={<FriendsO />} name="chat" badge={{ content: 5 }}>
-                            聊天
-                        </Tabbar.Item>
-                        <Tabbar.Item icon={<SettingO />} name="profile">
-                            我的
-                        </Tabbar.Item>
-                    </Tabbar>
-                    }
                 </div>
             </header>
         </div>

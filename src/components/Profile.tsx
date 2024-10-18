@@ -3,7 +3,7 @@ import { Uploader, Image, Divider, Button, Input, Form, Flex, Toast, Card, Space
 import { instance } from '../utils/api.js'
 import './Profile.css'
 import LocalStorageUtil from "../utils/LocalStorageUtil";
-import { Arrow, Like } from '@react-vant/icons'
+import { Arrow, Like, AddO } from '@react-vant/icons'
 
 function Profile({ setUserinfox }) {
     const userinfo = LocalStorageUtil.getItem("userinfo");
@@ -67,7 +67,7 @@ function Profile({ setUserinfox }) {
             <div>
                 <div className="heder-box">
                     <Image round fit='cover' width='30%' height='30%' src={image} />
-                    <Uploader upload={upload} accept='*' maxCount={1} style={{ position: 'absolute', bottom: '10%', right: 0 }} />
+                    <Uploader uploadIcon={<AddO />} upload={upload} accept='*' maxCount={1} style={{ position: 'absolute', bottom: '10%', right: 0 }} />
                     <Divider />
                     <Button className="button-custom" nativeType='submit' type='primary' block onClick={() => { handleUpdate() }}>
                         保存

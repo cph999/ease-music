@@ -13,5 +13,7 @@ import java.util.List;
 public interface PostsMapper extends BaseMapper<Posts> {
     public List<Posts> getUserPosts(@Param("u") User user);
 
-    public void like(@Param("u") User user, @Param("p") Posts p);
+    public void disLike(@Param("u") User user, @Param("p") Posts p);
+
+    public void addLike(@Param("u") User user, @Param("p") Posts p);
 }

@@ -82,7 +82,7 @@ function App() {
       case 'home':
         return <Home userinfo={userinfo} setUserinfo={setUserinfo} />;
       case 'search':
-        return <Discovery />;
+        return <Discovery userinfo={userinfo} />;
       case 'chat':
         return <Chat userinfo={userinfo} />;
       case 'profile':
