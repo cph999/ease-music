@@ -44,8 +44,8 @@ function Chat({ userinfo }) {
 
         fetchData();
 
-        const ws = new WebSocket(`wss://app102.acapp.acwing.com.cn/chat?userId=${userinfo.id}`);
-        // const ws = new WebSocket(`ws://localhost:8809/chat?userId=${userinfo.id}`);
+        // const ws = new WebSocket(`wss://app102.acapp.acwing.com.cn/chat?userId=${userinfo.id}`);
+        const ws = new WebSocket(`ws://localhost:8809/chat?userId=${userinfo.id}`);
 
         ws.onopen = () => {
             console.log('WebSocket connected');

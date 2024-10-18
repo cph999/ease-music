@@ -19,11 +19,9 @@
 .form-container {
     padding: 16px;
     flex: 1;
-    /* 使其填满剩余空间 */
     overflow-y: auto;
-    /* 使内容可以上下滚动 */
-    max-height: calc(100vh - 200px);
-    /* 设置最大高度，确保有空间滚动 */
+    max-height: calc(100vh - 150px);
+
 }
 
 .button-custom {
@@ -33,9 +31,9 @@
     padding: 10px 20px;
     font-size: 16px;
     transition: background-color 0.3s;
-    width: 17%;
+    width: 20%;
     position: absolute;
-    right: 16px;
+    right: 0;
     top: 11%;
     background-color: #FF4C39;
 }

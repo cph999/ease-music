@@ -2,8 +2,8 @@ import axios from 'axios';
 import LocalStorageUtil from './LocalStorageUtil';
 
 export const instance = axios.create({
-    baseURL: 'https://app102.acapp.acwing.com.cn/api',
-    // baseURL: 'http://localhost:8809/api',
+    // baseURL: 'https://app102.acapp.acwing.com.cn/api',
+    baseURL: 'http://localhost:8809/api',
         // baseURL: 'http://39.100.90.48:8809/api',
 
     headers: {

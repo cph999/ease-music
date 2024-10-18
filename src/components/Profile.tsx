@@ -88,6 +88,7 @@ function Profile({ setUserinfox }) {
                         <Flex>
                             <Flex.Item span={10}>
                                 <Form.Item
+                                    labelWidth="3em"
                                     name='nickname'
                                     label='昵称'
                                 >
@@ -96,6 +97,7 @@ function Profile({ setUserinfox }) {
                             </Flex.Item>
                             <Flex.Item span={14}>
                                 <Form.Item
+                                    labelWidth="4em"
                                     name='phone'
                                     label='联系方式'
                                 >
@@ -107,6 +109,7 @@ function Profile({ setUserinfox }) {
                                 <Form.Item
                                     name='age'
                                     label='年龄'
+                                    labelWidth="3em"
                                 >
                                     <Input placeholder='年龄' />
                                 </Form.Item>
@@ -114,6 +117,7 @@ function Profile({ setUserinfox }) {
                             <Flex.Item span={14}>
                                 <Form.Item
                                     name='address'
+                                    labelWidth="3em"
                                     label='居住地'
                                 >
                                     <Input placeholder='居住地' />
