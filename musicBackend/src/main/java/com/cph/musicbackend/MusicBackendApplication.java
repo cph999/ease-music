@@ -1,5 +1,6 @@
 package com.cph.musicbackend;
 
+import com.cph.musicbackend.utils.QueryHelper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,5 +14,4 @@ public class MusicBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(MusicBackendApplication.class, args);
     }
-
 }

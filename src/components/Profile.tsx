@@ -24,7 +24,7 @@ function Profile({ setUserinfox }) {
             const formData = new FormData();
             const timestamp = Date.now();
             formData.append('file', file, timestamp + '.png');
-            const response = await instance.post('/uploadFile', formData, {
+            const response = await instance.post('/uploadCover', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

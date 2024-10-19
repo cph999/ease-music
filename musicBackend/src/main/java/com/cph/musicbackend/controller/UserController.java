@@ -97,9 +97,36 @@ public class UserController {
         return new CommonResult(200, "查询成功", null);
     }
 
+    /**
+     * 修改头像
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/api/uploadCover")
+    @RecognizeAddress
+    public Object updateCover(@RequestParam("file") MultipartFile file) throws IOException {
+
+        String fileName = storageFile(file);
+        User currentUser = UserContext.getCurrentUser();
+        currentUser.setCover(url + file.getOriginalFilename());
+        userMapper.updateById(currentUser);
+        HashMap<String, String> res = new HashMap<>();
+        res.put("url", url + fileName);
+        return new CommonResult(200, "修改成功", res);
+    }
+
     @PostMapping("/api/uploadFile")
     @RecognizeAddress
-    public Object recongnizeMusic(@RequestParam("file") MultipartFile file) throws IOException {
+    public Object uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+
+        String fileName = storageFile(file);
+        HashMap<String, String> res = new HashMap<>();
+        res.put("url", url + fileName);
+        return new CommonResult(200, "上传成功", res);
+    }
+
+    public String storageFile(MultipartFile file) throws IOException {
 
         if (file.isEmpty()) {
             return "{\"error\": \"请选择一个文件上传\"}";
@@ -115,12 +142,7 @@ public class UserController {
         // 保存文件
         File destFile = new File(dir.getAbsolutePath() + File.separator + fileName);
         file.transferTo(destFile);
-        User currentUser = UserContext.getCurrentUser();
-        currentUser.setCover(url + file.getOriginalFilename());
-        userMapper.updateById(currentUser);
-        HashMap<String, String> res = new HashMap<>();
-        res.put("url", url + fileName);
-        return new CommonResult(200, "修改成功", res);
+        return fileName;
     }
 
     @PostMapping("/api/user/update")

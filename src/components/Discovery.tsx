@@ -103,7 +103,8 @@ function Discovery({ userinfo }) {
                 setTitle('');
                 setContent('');
                 setUploadedImages([]); // 清空已上传的图片列表
-                fetchPosts(); // 重新加载帖子列表
+                await fetchPosts(); // 重新加载帖子列表
+                setPostIndex(2);
                 Toast.success(response.data.message);
             }
         } catch (error) {
