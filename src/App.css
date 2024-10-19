@@ -30,9 +30,9 @@
   padding: 5vh 0;
   /* 上下都添加一些内边距 */
 }
-.rv-overlay{
+/* .rv-overlay{
   background: linear-gradient(to bottom, #DDA0DD, #FFB6C1);
-}
+} */
 
 .music-container {
   display: flex;

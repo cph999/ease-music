@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { instance } from '../utils/api';
-import { Flex, Image, Typography, Button, Uploader, Input, Cell, Toast } from 'react-vant';
+import { Flex, Image, Typography, Button, Uploader, Input, Cell, Toast, ActionSheet } from 'react-vant';
 import './Discovery.css'; // 引入自定义样式
 import { Like, LikeO, ShareO, AddO, Share } from "@react-vant/icons";
 import { useSwipeable } from 'react-swipeable';
+import { QRCodeSVG } from 'qrcode.react';
 
 function Discovery({ userinfo }) {
     const [posts, setPosts] = useState([]);
@@ -12,7 +13,7 @@ function Discovery({ userinfo }) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [uploadedImages, setUploadedImages] = useState([]); // 保存上传的图片URL
-
+    const [shareState, setShareState] = useState(false);
     useEffect(() => {
         fetchPosts();
     }, []);
@@ -34,7 +35,7 @@ function Discovery({ userinfo }) {
             });
             if (res.data.code === 200) {
                 // 更新点赞状态
-                setPosts(prevPosts => 
+                setPosts(prevPosts =>
                     prevPosts.map((post, index) =>
                         index === postIndex ? { ...post, isLike: state } : post
                     )
@@ -92,6 +93,8 @@ function Discovery({ userinfo }) {
             const payload = {
                 title,
                 content,
+                userIcon: userinfo.cover,
+                userNickname: userinfo.nkciname,
                 images: uploadedImages // 将上传的图片URL发送给服务器
             };
             const response = await instance.post('/publishPost', payload);
@@ -139,6 +142,19 @@ function Discovery({ userinfo }) {
                     ) : null}
                 </div>
 
+                <ActionSheet visible={shareState} onCancel={() => { setShareState(false) }}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <QRCodeSVG
+                            id="qrCode"
+                            title="微信扫一扫"
+                            value="https://app102.acapp.acwing.com.cn/"
+                            size={200}
+                            fgColor="#000000"
+                            style={{ margin: 'auto' }}
+                        />
+                    </div>
+                </ActionSheet>
+
                 <div className="right-operate-container">
                     <Image
                         src={posts[postIndex]?.userIcon}
@@ -152,7 +168,7 @@ function Discovery({ userinfo }) {
                     ) : (
                         <LikeO fontSize="3.5em" onClick={() => { handleClickLike(1) }} />
                     )}
-                    <ShareO fontSize="3.5em" />
+                    <ShareO fontSize="3.5em" onClick={() => { setShareState(true) }} />
                 </div>
             </div>}
 
@@ -169,7 +185,7 @@ function Discovery({ userinfo }) {
                             clearable
                         />
                     </Cell>
-                    <Uploader uploadIcon={<AddO />} upload={upload} accept='*' maxCount={9} style={{ position: 'absolute', bottom: '10%', right: 0 }} />
+                    <Uploader uploadIcon={<AddO />} upload={upload} accept='*' maxCount={9} style={{ position: 'absolute', bottom: '10%', right: 0 }} maxSize={2 * 1024 * 1024} onOversize={() => Toast.info('文件大小不能超过2MB')} />
 
                     <div>
                         <Cell>
