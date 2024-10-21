@@ -1,12 +1,16 @@
 package com.cph.musicbackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cph.musicbackend.aspect.RecognizeAddress;
 import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.common.CommonResult;
 import com.cph.musicbackend.entity.Message;
 import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.entity.User;
+import com.cph.musicbackend.entity.search.BaseSearch;
 import com.cph.musicbackend.mapper.MessageMapper;
 import com.cph.musicbackend.mapper.MusicMapper;
 import com.cph.musicbackend.mapper.UserMapper;
@@ -55,6 +59,20 @@ public class UserController {
         String s = MD5Utils.MD5Lower(loginUser.getPassword(), salt);
         if (s.equals(user.getPassword())) {
             user.setToken(UUID.randomUUID().toString());
+            userMapper.updateById(user);
+            return new CommonResult(200, "登录成功", user);
+        } else {
+            return new CommonResult(400, "账号或密码错误", null);
+        }
+    }
+
+    @PostMapping("/api/slogin")
+    public CommonResult slogin(@RequestBody User loginUser) {
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", loginUser.getUsername()));
+        Assert.notNull(user, "用户不存在");
+        String s = MD5Utils.MD5Lower(loginUser.getPassword(), salt);
+        if (s.equals(user.getPassword())) {
+            user.setSuperToken(UUID.randomUUID().toString());
             userMapper.updateById(user);
             return new CommonResult(200, "登录成功", user);
         } else {
@@ -176,5 +194,57 @@ public class UserController {
         sets.remove(currentUser.getId());
         List<User> users = userMapper.selectList(new QueryWrapper<User>().in("id", sets));
         return new CommonResult(200, "修改成功", users);
+    }
+
+    /**
+     * 获取全部用户
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/api/getFriendsList")
+    @RecognizeAddress
+    public CommonResult getFriendsList(@RequestBody BaseSearch baseSearch) throws IOException {
+        User currentUser = UserContext.getCurrentUser();
+        if( currentUser.getIsSuper() == 1){
+            Page<User> userPage = new Page<>(baseSearch.getPageNum(), baseSearch.getPageSize());
+            QueryWrapper<User> wrapper = new QueryWrapper<User>().like(StringUtils.isNotBlank(baseSearch.getSearch()), "nickname", baseSearch.getSearch())
+                    .or().like(StringUtils.isNotBlank(baseSearch.getSearch()), "username", baseSearch.getSearch());
+            IPage<User> userIPage = userMapper.selectPage(userPage, wrapper);
+            return new CommonResult(200, "查询成功", null,userIPage.getRecords(), userIPage.getTotal());
+        }
+        return new CommonResult(401, "权限不足", null);
+    }
+
+    /**
+     * 删除用户
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/api/deleteUser")
+    @RecognizeAddress
+    public CommonResult deleteUser(@RequestBody User user) throws IOException {
+        User currentUser = UserContext.getCurrentUser();
+        if( currentUser.getIsSuper() == 1){
+            userMapper.deleteById(user.getId());
+            return new CommonResult(200, "删除用户成功", null);
+        }
+        return new CommonResult(401, "权限不足", null);
+    }
+
+
+    /**
+     * 修改用户信息
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/api/updateUser")
+    @RecognizeAddress
+    public CommonResult updateUser(@RequestBody User user) throws IOException {
+        User currentUser = UserContext.getCurrentUser();
+        if( currentUser.getIsSuper() == 1){
+            userMapper.updateById(user);
+            return new CommonResult(200, "修改用户信息成功", null);
+        }
+        return new CommonResult(401, "权限不足", null);
     }
 }

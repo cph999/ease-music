@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -25,6 +27,8 @@ public class User {
     private String cover;
 
     private String token;
+    private String superToken;
+    private Integer isSuper;
 
     @TableField(exist = false)
     private List<Music> musics;

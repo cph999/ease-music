@@ -29,11 +29,13 @@ public class LoginAspect {
 
     @Autowired
     MusicMapper musicMapper;
+
     /**
      * 声明切面点拦截那些类
      */
     @Pointcut("@annotation(com.cph.musicbackend.aspect.RecognizeAddress)")
-    private void pointCutMethodController() {}
+    private void pointCutMethodController() {
+    }
 
     /**
      * 环绕通知前后增强
@@ -58,13 +60,22 @@ public class LoginAspect {
             ipAddress = ipAddress.split(",")[0]; // 如果有多个代理IP，取第一个
 
             String token = request.getHeader("authorization");
-            if(StringUtils.isBlank(token)){
-                throw new Exception("请先登录");
+            String isS = request.getHeader("isS");
+
+            if (StringUtils.isNotBlank(isS) && "1".equals(isS)) {
+                User user = userMapper.selectOne(new QueryWrapper<User>().eq("super_token", token));
+                if (user == null) throw new Exception("请先登录");
+                user.setIpAddress(ipAddress);
+                UserContext.setCurrentUser(user);
+            } else {
+                if (StringUtils.isBlank(token)) {
+                    throw new Exception("请先登录");
+                }
+                User user = userMapper.selectOne(new QueryWrapper<User>().eq("token", token));
+                if (user == null) throw new Exception("请先登录");
+                user.setIpAddress(ipAddress);
+                UserContext.setCurrentUser(user);
             }
-            User user = userMapper.selectOne(new QueryWrapper<User>().eq("token", token));
-            if(user == null )throw new Exception("请先登录");
-            user.setIpAddress(ipAddress);
-            UserContext.setCurrentUser(user);
         }
         // 执行方法
         Object result = joinPoint.proceed();

@@ -1,12 +1,17 @@
 package com.cph.musicbackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cph.musicbackend.aspect.RecognizeAddress;
 import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.common.CommonResult;
 import com.cph.musicbackend.entity.Music;
 import com.cph.musicbackend.entity.User;
+import com.cph.musicbackend.entity.search.BaseSearch;
+import com.cph.musicbackend.entity.search.MusicSearch;
 import com.cph.musicbackend.mapper.MusicMapper;
 import com.cph.musicbackend.mapper.UserMapper;
 import com.cph.musicbackend.rd3.AcrCloudUtil;
@@ -49,6 +54,37 @@ public class MusicController {
         return personalMuicList.getMusics();
     }
 
+    @PostMapping("/api/getMusicList")
+    @RecognizeAddress
+    public CommonResult getMusicList(@RequestBody MusicSearch baseSearch) {
+        User currentUser = UserContext.getCurrentUser();
+        if (currentUser.getIsSuper() != null && currentUser.getIsSuper() == 1) {
+            Page<Music> musicPage = new Page<>(baseSearch.getPageNum(), baseSearch.getPageSize());
+
+            QueryWrapper<Music> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("is_save",1).and(w->w.isNotNull("is_save").like(StringUtils.isNotBlank(baseSearch.getTitle()), "title", baseSearch.getTitle())
+                    .or().like(StringUtils.isNotBlank(baseSearch.getArtist()), "artist", baseSearch.getArtist())).orderByDesc("id");
+            IPage<Music> musicIPage = musicMapper.selectPage(musicPage, queryWrapper);
+
+            return new CommonResult(200, "查询成功", null,musicIPage.getRecords(),musicPage.getTotal());
+        }
+
+        return new CommonResult(403, "权限不足", null);
+    }
+
+    @PostMapping("/api/upSavedMusics")
+    @RecognizeAddress
+    public CommonResult upSavedMusics(@RequestBody MusicSearch baseSearch) {
+        User currentUser = UserContext.getCurrentUser();
+        if(currentUser.getIsSuper() == 1){
+            Page<Music> musicPage = new Page<>(baseSearch.getPageNum(), baseSearch.getPageSize());
+            QueryWrapper<Music> wrapper = new QueryWrapper<Music>().isNull("is_save").or().eq("is_save", 0);
+            Page<Music> musicPageResult = musicMapper.selectPage(musicPage, wrapper);
+            return new CommonResult(200,"查询成功",null,musicPageResult.getRecords(),musicPage.getTotal());
+        }
+        return new CommonResult(401,"权限不足",null);
+    }
+
     @PostMapping("/api/search")
     @RecognizeAddress
     public Object search(@RequestBody Music music) {
@@ -78,16 +114,17 @@ public class MusicController {
     }
 
     @PostMapping("/api/add")
-    public Object add(@RequestBody Music music) {
+    public CommonResult add(@RequestBody Music music) {
         Assert.hasText(music.getTitle(), "歌曲名字不能为空");
         List<Music> musics = musicMapper.selectList(new QueryWrapper<Music>().eq("title", music.getTitle()).isNotNull("last_update_time"));
-        if (CollectionUtils.isNotEmpty(musics)) return music.getTitle() + "歌曲已添加";
+        if (CollectionUtils.isNotEmpty(musics)) return new CommonResult(200,music.getTitle() + "歌曲已添加,请勿重复操作",null);
         try {
             musicMapper.insert(music);
         } catch (Exception e) {
-            return e.getMessage();
+            e.printStackTrace();
+            return new CommonResult(500,"系统错误",null);
         }
-        return "添加成功";
+        return new CommonResult(200,"添加任务成功",null);
     }
 
     /**
