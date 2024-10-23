@@ -62,20 +62,20 @@ public class LoginAspect {
             String token = request.getHeader("authorization");
             String isS = request.getHeader("isS");
 
-            if (StringUtils.isNotBlank(isS) && "1".equals(isS)) {
-                User user = userMapper.selectOne(new QueryWrapper<User>().eq("super_token", token));
-                if (user == null) throw new Exception("请先登录");
-                user.setIpAddress(ipAddress);
-                UserContext.setCurrentUser(user);
-            } else {
-                if (StringUtils.isBlank(token)) {
-                    throw new Exception("请先登录");
-                }
-                User user = userMapper.selectOne(new QueryWrapper<User>().eq("token", token));
-                if (user == null) throw new Exception("请先登录");
-                user.setIpAddress(ipAddress);
-                UserContext.setCurrentUser(user);
+            User user = null;
+            if (StringUtils.isBlank(token)) {
+                throw new Exception("请先登录");
             }
+            if (StringUtils.isNotBlank(isS) && "1".equals(isS)) {
+                 user = userMapper.selectOne(new QueryWrapper<User>().eq("super_token", token));
+            } else {
+                 user = userMapper.selectOne(new QueryWrapper<User>().eq("token", token));
+            }
+            if (user == null) throw new Exception("请先登录");
+            user.setLastLoginTime(new Date());
+            user.setIpAddress(ipAddress);
+            UserContext.setCurrentUser(user);
+            userMapper.updateById(user);
         }
         // 执行方法
         Object result = joinPoint.proceed();

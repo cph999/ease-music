@@ -29,6 +29,7 @@ public class User {
     private String token;
     private String superToken;
     private Integer isSuper;
+    private Date lastLoginTime;
 
     @TableField(exist = false)
     private List<Music> musics;
