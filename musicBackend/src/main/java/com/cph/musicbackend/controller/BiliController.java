@@ -1,21 +1,19 @@
 package com.cph.musicbackend.controller;
 
 import cn.hutool.http.HttpUtil;
-import com.cph.musicbackend.aspect.RecognizeAddress;
-import com.cph.musicbackend.aspect.UserContext;
 import com.cph.musicbackend.common.CommonResult;
 import com.cph.musicbackend.entity.Music;
-import com.cph.musicbackend.entity.User;
+import com.cph.musicbackend.mapper.MusicMapper;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -25,11 +23,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class BiliController {
@@ -37,8 +40,15 @@ public class BiliController {
     @Value("${file.upload.path}")
     private String path;
 
+    @Value("${file.upload.url}")
+    private String url;
+
+    @Autowired
+    MusicMapper musicMapper;
+
     /**
      * 移动端链接
+     *
      * @param url
      * @return
      */
@@ -49,6 +59,7 @@ public class BiliController {
 
     /**
      * 根据bv获取详细信息，其中avid和cid很重要
+     *
      * @return
      */
     @PostMapping("/api/av")
@@ -56,13 +67,15 @@ public class BiliController {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = buildHttpHeader();
         HttpEntity requestEntity = new HttpEntity(headers);
-        if(map.containsKey("SESSDATA") && map.get("SESSDATA") != null) headers.set("cookie", map.get("SESSDATA").toString());
+        if (map.containsKey("SESSDATA") && map.get("SESSDATA") != null)
+            headers.set("cookie", map.get("SESSDATA").toString());
         ResponseEntity<String> bv = restTemplate.exchange("https://api.bilibili.com/x/web-interface/view?bvid=" + map.get("bv"), HttpMethod.GET, requestEntity, String.class);
         return bv.getBody();
     }
 
     /**
      * 根据avid和cid请求下载地址接口，获取视频地址
+     *
      * @return
      */
     @PostMapping("/api/download")
@@ -70,8 +83,9 @@ public class BiliController {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = buildHttpHeader();
         HttpEntity requestEntity = new HttpEntity(headers);
-        if(map.containsKey("SESSDATA") && map.get("SESSDATA") != null) headers.set("cookie", map.get("SESSDATA").toString());
-        ResponseEntity<String> exchange = restTemplate.exchange("https://api.bilibili.com/x/player/playurl?avid=" + map.get("aid") + "&cid=" + map.get("cid") + "&qn="+map.get("qn") +
+        if (map.containsKey("SESSDATA") && map.get("SESSDATA") != null)
+            headers.set("cookie", map.get("SESSDATA").toString());
+        ResponseEntity<String> exchange = restTemplate.exchange("https://api.bilibili.com/x/player/playurl?avid=" + map.get("aid") + "&cid=" + map.get("cid") + "&qn=" + map.get("qn") +
                         "&type=mp4&platform=html5&high_quality=1",
                 HttpMethod.GET, requestEntity, String.class);
         return exchange.getBody();
@@ -84,24 +98,24 @@ public class BiliController {
         HttpHeaders headers = buildHttpHeader();
         HttpEntity requestEntity = new HttpEntity(headers);
         ResponseEntity<Map> loginUrl = restTemplate.exchange("https://passport.bilibili.com/x/passport-login/web/qrcode/generate?source=main-fe-header", HttpMethod.GET, requestEntity, Map.class);
-        return new CommonResult(200, "获取b站二维码链接成功",loginUrl.getBody());
+        return new CommonResult(200, "获取b站二维码链接成功", loginUrl.getBody());
     }
 
     @PostMapping("/api/checkQrCode")
-    public CommonResult checkQrCode(@RequestBody Map map){
+    public CommonResult checkQrCode(@RequestBody Map map) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = buildHttpHeader();
         HttpEntity requestEntity = new HttpEntity(headers);
         String url = "https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key=" + map.get("qrcode_key") + "&source=main-fe-header";
         ResponseEntity<Map> loginStatus = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
-        return new CommonResult(200, "二维码状态查询成功",loginStatus.getBody());
+        return new CommonResult(200, "二维码状态查询成功", loginStatus.getBody());
     }
 
     @PostMapping("/api/getcookie")
     public CommonResult getCookie(@RequestBody Map<String, Object> map) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("referer","https://www.bilibili.com/");
-        headers.add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
+        headers.add("referer", "https://www.bilibili.com/");
+        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
         // 创建 CookieStore
         CookieStore cookieStore = new BasicCookieStore();
 
@@ -135,10 +149,10 @@ public class BiliController {
     }
 
 
-    public HttpHeaders buildHttpHeader(){
+    public HttpHeaders buildHttpHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("referer","https://www.bilibili.com/");
-        headers.add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
+        headers.add("referer", "https://www.bilibili.com/");
+        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0");
         return headers;
     }
 
@@ -183,5 +197,24 @@ public class BiliController {
         headers.add("Content-Type", "audio/mpeg");
 
         return new ResponseEntity<>(audioBytes, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/sync")
+    public CommonResult syncBakeup() throws IOException {
+        String dir = path + "bakeup";
+        DirectoryStream<Path> paths = Files.newDirectoryStream(Paths.get(dir));
+        for (Path p : paths) {
+            String fileName = p.toFile().getName();
+            Music music = new Music().setTitle(fileName.replace(".mp3", "").replaceAll("\\d", "")
+                    .replaceAll("-","").replaceAll("_",""));
+            musicMapper.insert(music);
+
+            File newFile = new File(path + music.getId() + ".mp3");
+            // 复制文件内容
+            Files.copy(p, newFile.toPath());
+            music.setUrl(url + music.getId() + ".mp3").setIsSave(1).setLastUpdateTime(new Date());
+            musicMapper.updateById(music);
+        }
+        return null;
     }
 }

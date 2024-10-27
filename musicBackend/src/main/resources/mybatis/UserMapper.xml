@@ -62,6 +62,7 @@
                  LEFT JOIN user_music b ON a.id = b.uid
                  LEFT JOIN music c ON b.mid = c.id
         WHERE a.username = #{u.username}
+          AND c.cover is not null
           AND c.url LIKE '%https://app102.acapp.acwing.com.cn%'
         AND b.like_state = 1
         order by c.id desc

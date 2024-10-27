@@ -33,7 +33,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mybatis/*.xml
-#
 file:
   upload:
     path: /root/nginx/share/nginx/media/

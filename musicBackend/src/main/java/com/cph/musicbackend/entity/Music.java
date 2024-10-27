@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
-
+@Data
 @Accessors(chain =true)
 public class Music {
 
@@ -33,83 +33,4 @@ public class Music {
     @TableField(exist = false)
     private Integer likeState;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public Date getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(Date lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
-    }
-
-    public Integer getIsSave() {
-        return isSave;
-    }
-
-    public void setIsSave(Integer isSave) {
-        this.isSave = isSave;
-    }
-
-    public Integer getTriggerId() {
-        return triggerId;
-    }
-
-    public void setTriggerId(Integer triggerId) {
-        this.triggerId = triggerId;
-    }
-
-    public Integer getLikeState() {
-        return likeState;
-    }
-
-    public void setLikeState(Integer likeState) {
-        this.likeState = likeState;
-    }
 }

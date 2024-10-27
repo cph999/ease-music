@@ -66,7 +66,7 @@ public class MusicController {
             Page<Music> musicPage = new Page<>(baseSearch.getPageNum(), baseSearch.getPageSize());
 
             QueryWrapper<Music> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("is_save", 1);
+            queryWrapper.eq("is_save", 1).isNotNull("cover");
             if (StringUtils.isNotBlank(baseSearch.getTitle()) || StringUtils.isNotBlank(baseSearch.getArtist())) {
                 queryWrapper.and(w -> {
                     if (StringUtils.isNotBlank(baseSearch.getTitle())) {
